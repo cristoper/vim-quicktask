@@ -204,6 +204,11 @@ function! s:FindTaskEnd(move)
         let task_end_line = search('^\($\|\s\{0,'.indent.'}[^ ]\)', 'nW')
     endif
 
+    if task_end_line == 0
+        " No next parent-level indent found, so task extends to end of buffer
+        let task_end_line = line('$')+1
+    endif
+
     if a:move
         " Move the cursor to the line immediately prior, which should be the
         " last line of the task we are looking for.
