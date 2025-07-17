@@ -229,7 +229,7 @@ function! s:FindTaskParent()
         let parent_line = search('^\s\{'.parent_indent.'}[^ ]', 'bnW')
         return parent_line
     endif
-endfunction!
+endfunction
 
 " ============================================================================
 " FindNextSibling(): Find the sibling task below the current task. {{{1
