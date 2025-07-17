@@ -252,6 +252,10 @@ function! s:FindNextSibling()
     if indent > 0
         let parent_indent = indent - &tabstop
         let boundary_line = search('^\s\{0,'.parent_indent.'}[^ ]', 'nW')
+        if boundary_line == 0
+            " no more tasks below our indent level
+            let boundary_line = line('$')
+        endif
     else
         " If we are at the lowest indent level, our boundary is the end of the
         " file.
