@@ -137,16 +137,17 @@ if exists("g:quicktask_snip_path")
 endif
 
 " ============================================================================
-" GetAnyIndent(): Get the indent of any line. {{{1
-"
-" With the cursor on any line, return the indent level (the number of spaces
-" at the beginning of the line, simply).
-function! s:GetAnyIndent()
-    " What is the indentation level of this task?
-    let matches = matchlist(getline('.'), '\v^(\s{-})[^ ]')
-    let indent = len(matches[1])
-
-    return indent
+" GetAnyIndent(): Get the indent of the given line number. Use '.' to get
+" current line indent {{{1
+function! s:GetAnyIndent(line)
+    if a:line == ''
+        let a:line = '.'
+    endif
+    let matches = matchlist(getline(a:line), '\v^(\s{-})[^ ]')
+    if empty(matches)
+        return 0
+    endif
+    return len(matches[1])
 endfunction
 
 " ============================================================================
@@ -405,7 +406,7 @@ endfunction
 function! s:AddTaskBelow()
     " We insert directly below sections.
     if getline('.') =~ ':$' && getline('.') !~ '^\s*-'
-        let indent = s:GetAnyIndent() + &tabstop
+        let indent = s:GetAnyIndent('.') + &tabstop
         let task_line_num = line('.')
     else
         " Find current task
