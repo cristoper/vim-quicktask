@@ -87,6 +87,10 @@ if !exists("g:quicktask_task_insert_added")
     let g:quicktask_task_insert_added = 1
 endif
 
+if !exists("g:quicktask_auto_sum_time")
+    let g:quicktask_auto_sum_time = 1
+endif
+
 if !exists("g:quicktask_task_added_include_time")
     let g:quicktask_task_added_include_time = 0
 endif
@@ -239,6 +243,22 @@ function! s:FindTaskParent()
         let parent_line = search('^\s\{'.parent_indent.'}\S', 'bnW')
         return parent_line
     endif
+endfunction
+
+" ============================================================================
+" FindTaskTopParent(): Find the topmost parent of the current task {{{1
+"
+" Get the line number of the topmost parent the current task. If no parent,
+" return 0
+function! s:FindTaskTopParent()
+    let line = s:FindTaskParent()
+    let parent_line = line
+    while parent_line != 0
+        let line = parent_line
+        call cursor(line, 0)
+        let parent_line = s:FindTaskParent()
+    endwhile
+    return line
 endfunction
 
 " ============================================================================
@@ -772,6 +792,10 @@ function! s:AddNextTimeToTask()
 
         let current_line = current_line + 1
     endwhile
+
+    if g:quicktask_auto_sum_time
+        call s:UpdateTaskTime('.')
+    endif
 endfunction
 
 " ============================================================================
@@ -865,6 +889,11 @@ function! s:TaskComplete()
     "exe "normal! o\<Esc>\"aP"
     " Restore the value of register 'a'.
     "let @a = old_a
+
+    " Automatically update the time summary upon completion.
+    if g:quicktask_auto_sum_time
+        call s:UpdateTaskTime('.')
+    endif
 endfunction
 
 " ============================================================================
@@ -1252,6 +1281,109 @@ function! QTParseTask(line, ...)
 endfunction
 
 " ============================================================================
+" FormatTime(): Format minutes into HH:MM {{{1
+function! s:FormatTime(minutes)
+    let hours = a:minutes / 60
+    let minutes = a:minutes % 60
+    return printf("%02d:%02d", hours, minutes)
+endfunction
+
+" ============================================================================
+" FlattenTasks(): Recursively flatten list of task trees to single list {{{1
+function! s:FlattenTasks(tasks, depth)
+    let flat_tasks = []
+    for task in a:tasks
+        let flat_tasks += [task]
+        if !empty(task.children)
+            let flat_tasks += s:FlattenTasks(task.children, a:depth+1)
+        endif
+    endfor
+    return flat_tasks
+endfunction
+
+" ============================================================================
+" UpdateTasksTime(): Add/update @ Time annotations for every task in tasks and
+" their children. {{{1
+"
+" Takes a list of parsed tasks (from QTParseTask()) and adds or updates each
+" @ Time annotation based on the calculated minutes attribute.
+function! s:UpdateTasksTime(tasks)
+    let winview = winsaveview()
+
+    " We edit tasks in place, so we need to flatten the task tree and then
+    " iterate through them from the bottom up. Otherwise task line numbers
+    " will shift before we process them.
+    let flat_tasks = s:FlattenTasks(a:tasks, 0)
+    let sorted_tasks = sort(flat_tasks, {i1, i2 -> i2.line - i1.line})
+
+    for task in sorted_tasks
+        " Recursively update children
+
+        " Move to the start of the task
+        call cursor(task.line, 0)
+        let task_end_line = s:FindTaskEnd(0)
+        let indent = s:GetTaskIndent() + &tabstop
+        let physical_indent = repeat(" ", indent)
+
+        " Loop through lines in task to find last '@ Start' line and delete
+        " any existing '@ Time' lines
+        let cur_line = line('.')+1
+        let start_line = 0
+        while cur_line <= task_end_line
+            let line = getline(cur_line)
+            if line =~ s:task_or_section_regex
+                " We've reached another/sub task/section
+                break
+            elseif line =~ '\v^\s{'.indent.'}\@ Time'
+                call deletebufline("%", cur_line)
+                continue
+            elseif line =~ '\v^\s{'.indent.'}\@ Start'
+                let start_line = cur_line
+            endif
+            let cur_line = cur_line + 1
+        endwhile
+
+        if start_line == 0
+            " sections and tasks with no "@ Start" line
+            let start_line = line('.')
+        endif
+
+        if start_line > 0
+            if task.total_minutes > 0
+                let time = s:FormatTime(task.minutes)
+                let total_time = s:FormatTime(task.total_minutes)
+                call append(start_line, physical_indent."@ Time [" . total_time . "]")
+            endif
+        endif
+
+    endfor
+    call winrestview(winview)
+endfunction
+
+" Update task times for task on current line (including all super- and
+" sub-tasks)
+function! s:UpdateTaskTime(line)
+    let savepos = getcurpos()
+    call cursor(a:line, 0)
+    let top = s:FindTaskTopParent()
+    let tasks = QTParseTask(top)
+    call s:UpdateTasksTime([tasks])
+    call setpos('.', savepos)
+endfunction
+
+function! s:UpdateAllTaskTimes()
+    " Get top-level tasks/sections
+    " Notice "-1" third argument to range(): we must iterate backwards or add
+    " '@ Time' lines will change line numbers of next top-level tasks
+    let top_level_tasks = filter(range(line('$'), 1, -1), 'getline(v:val) =~ "^\\S"')
+    for task in top_level_tasks
+        call s:UpdateTaskTime(task)
+    endfor
+endfunction
+
+command! -buffer QTUpdateTimes call s:UpdateAllTaskTimes()
+
+" ============================================================================
 " Private mappings {{{1
 nmap <silent> <Plug>SelectTask               :call <SID>SelectTask()<CR>
 nmap <silent> <Plug>TaskComplete             :call <SID>TaskComplete()<CR>
@@ -1266,6 +1398,7 @@ nmap <silent> <Plug>AddChildTask             :call <SID>AddChildTask()<CR>
 nmap <silent> <Plug>MoveTaskUp               :call <SID>MoveTaskUp()<CR>
 nmap <silent> <Plug>MoveTaskDown             :call <SID>MoveTaskDown()<CR>
 nmap <silent> <Plug>AddSnipToTask            :call <SID>AddSnipToTask()<CR>
+nmap <silent> <Plug>UpdateTaskTimes          :call <SID>UpdateAllTaskTimes()<CR>
 nmap <silent> <Plug>FindIncompleteTimestamps :call <SID>FindIncompleteTimestamps()<CR>:silent set hlsearch \| echo<CR>
 nmap <silent> <Plug>OpenSnipUnderCursor      :call <SID>OpenSnip()<CR>
 
@@ -1284,6 +1417,7 @@ if ! g:quicktask_no_mappings && ! exists('b:quicktask_did_mappings')
     nmap <unique><buffer> <Leader>tu  <Plug>MoveTaskUp
     nmap <unique><buffer> <Leader>td  <Plug>MoveTaskDown
     nmap <unique><buffer> <Leader>tS  <Plug>AddSnipToTask
+    nmap <unique><buffer> <Leader>tt  <Plug>UpdateTaskTimes
     nmap <unique><buffer> <Leader>tfi <Plug>FindIncompleteTimestamps
     nmap <unique><buffer> <CR>        <Plug>OpenSnipUnderCursor
     command -buffer -nargs=0 QTAddTaskBelow call <SID>AddTaskBelow()

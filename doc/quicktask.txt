@@ -19,12 +19,13 @@
 4. Mappings .................................... |quicktask-mappings|
 5. Abbreviations ............................... |quicktask-abbreviations|
 6. Organizing Tasks ............................ |quicktask-organizing-tasks|
-7. Using Snips ................................. |quicktask-snips|
-8. Options ..................................... |quicktask-options|
-9. Advanced Topics ............................. |quicktask-advanced-topics|
+7. Time Management ............................. |quicktask-time|
+8. Using Snips ................................. |quicktask-snips|
+9. Options ..................................... |quicktask-options|
+10. Advanced Topics ............................. |quicktask-advanced-topics|
     9.1 Setting the Filetype ................... |quicktask-adv-filetype|
     9.2 Customizing Mappings ................... |quicktask-adv-mappings|
-10. Known Issues ............................... |quicktask-known-issues|
+11. Known Issues ............................... |quicktask-known-issues|
 
 ===============================================================================
 1. Introduction                                 *quicktask-introduction*
@@ -128,6 +129,9 @@ of their sub-tasks, and so on.
                 A command to ask a new task below - same as <Leader>to (see
                 section |quicktask-mappings||).
 
+:QTUpdateTimes
+                Updates "@ Time" sums for all tasks in buffer.
+
 ===============================================================================
 4. Mappings                                     *quicktask-mappings*
 
@@ -159,7 +163,7 @@ mappings are configurable and that configuration is covered in
                 annotation with a start time, an end time will be added to it.
                 If there is already a complete start and end item, a new one
                 will be added. By pressing <Leader>ts repeatedly, you can log
-                the start and stop progress of a task.
+                the start and stop progress of a task. See |quicktask-time|.
 
 <Leader>tu      Move the current task up (mnemonic: "task up"). Tasks can only
                 be moved up and down among sibling tasks, so they will not
@@ -256,7 +260,63 @@ There is no reason not to create any sections or project groupings you can
 imagine, including nested sections.
 
 ===============================================================================
-7. Using Snips                                  *quicktask-snips*
+7. Time Management                             *quicktask-time*
+
+To begin work on a task, move the cursor to anywhere in the task and use
+<leader>ts (or whatever is mapped to <Plug>AddNextTimeToTask). ex: >
+
+    CURRENT TASKS:
+      - My first task.
+        @ Added [Sat 2014-01-25]
+        @ Start [Sat 2014-01-25] [15:57]
+<
+To stop working on the task, use <leader>ts again and an end time will be
+added to the open "@ Start" time: >
+
+    CURRENT TASKS:
+      - My first task.
+        @ Added [Sat 2014-01-25]
+        @ Start [Sat 2014-01-25] [15:57], end [16:34]
+<
+Every time you work on the task, keep track of the time by starting and ending
+with <leader>ts: >
+
+    CURRENT TASKS:
+      - My first task.
+        @ Added [Sat 2014-01-25]
+        @ Start [Sat 2014-01-25] [15:57], end [16:34]
+        @ Start [Sat 2014-01-27] [11:30], end [17:00]
+        @ Start [Sat 2014-02-02] [09:00], end [16:34]
+<
+Now to get a total time spent on the task, use <leader>tt
+(<Plug>UpdateTaskTimes). This will add a "@ Time" line to every task (and
+super-task) showing the total time spent (in hh:mm format) on the current task
+and all subtasks: >
+
+    CURRENT TASKS:
+      @ Time [14:20]
+      - My first task.
+        @ Added [Sat 2014-01-25]
+        @ Start [Sat 2014-01-25] [15:57], end [16:34]
+        @ Start [Sat 2014-01-27] [11:30], end [17:00]
+        @ Start [Sat 2014-02-02] [09:00], end [16:34]
+        @ Time [14:20]
+        - Subtask
+          @ Added [Tue 2026-02-10]
+          @ Start [Tue 2026-02-10] [22:00], end [22:39]
+          @ Time [00:39]
+<
+In the above example, we've spent 14h20m on "My first task" and 39m on
+"Subtask" for a total of 14h20m which is given under the "CURRENT TASKS"
+section.
+
+To keep "@ Time" lines in sync with "@ Start" lines, set
+|g:quicktask_auto_sum_time|. Even with |g:quicktask_auto_sum_time| set, if you
+manually edit the value of a "@ Start" line, you must use <leader>tt or
+:QTUpdateTimes to force "@ Time" lines to update.
+
+===============================================================================
+8. Using Snips                                  *quicktask-snips*
 
 Snips are a way for you to attach freeform information to task entries.
 Fundamentally snips are text files, but there is no limitation to what
@@ -290,7 +350,7 @@ To open a snip, place your cursor anywhere on the snip's ID line and press
 <CR>. This mapping is customizable, see |quicktask-adv-mappings|.
 
 ===============================================================================
-8. Options                                      *quicktask-options*
+9. Options                                      *quicktask-options*
 
 g:quicktask_default_filename                    *g:quicktask_default_filename*
     The name of the file to open when no filename is given. The current
@@ -305,6 +365,12 @@ g:quicktask_no_mappings                         *g:quicktask_no_mappings*
     Do not create keyboard mappings. This will make Quicktask very tedious and
     annoying to use, so you should create your own mappings. See
     |quicktask-advanced-topics| for more on this.
+
+g:quicktask_auto_sum_time                      *g:quicktask_auto_sum_time*
+    If set to true (a non-zero number, such as 1), Quicktask will
+    automatically update all "@ Time" sums whenever a task is started/stopped
+    (with <leader>ts) or marked as "DONE" (with <leader>tD). See
+    |quicktask-organizing-tasks|.
 
 g:quicktask_autosave                            *g:quicktask_autosave*
     If set to true (a non-zero number, such as 1), Quicktask will attempt to
@@ -347,9 +413,9 @@ g:quicktask_snip_win_split_direction    *g:quicktask_snip_win_split_direction*
     will split horizontally.
 
 ===============================================================================
-9. Advanced Topics                              *quicktask-advanced-topics*
+10. Advanced Topics                              *quicktask-advanced-topics*
 
-9.1 Setting the Filetype                        *quicktask-adv-filetype*
+10.1 Setting the Filetype                        *quicktask-adv-filetype*
 
 Quicktask is a filetype plugin (ftplugin), meaning that it is reliant on the
 filetype of the current file in order to operate. The Quicktask filetype is
@@ -371,7 +437,7 @@ this line to your .vimrc: >
 This tells Vim that when opening a new file or reading in a new buffer, if the
 filename matches *.quicktask, set the filetype to quicktask (see |setf|).
 
-9.2 Customizing Mappings                        *quicktask-adv-mappings*
+10.2 Customizing Mappings                        *quicktask-adv-mappings*
 
 Quicktask exposes its mappings using the <Plug> prefix, which makes them
 impossible to type on your keyboard. Those un-typable mappings are then
@@ -406,7 +472,7 @@ name, or you can look up the keystrokes above in the |quicktask-mappings|
 section of this document.
 
 ===============================================================================
-10. Known Issues                                 *quicktask-known-issues*
+11. Known Issues                                 *quicktask-known-issues*
 
 Quicktask is a labor of love and a side project. As such, there are some
 problems, and I know about most of them. So far, the issues haven't been so
