@@ -59,6 +59,11 @@ setlocal foldtext=QTFoldText()
 " Script settings
 let s:one_indent = repeat(" ", &tabstop)
 
+" regex
+let s:task_regex = '\v^\s*- '
+let s:section_regex = '\v^\s*[^-].*:\s*$'
+let s:task_or_section_regex = '\v^(\s{-}- |.*:\s*$)'
+
 if has('gui_win32')
     let s:path_sep = '\'
 else
@@ -155,7 +160,7 @@ endfunction
 "
 " With the cursor on a task line, return the indent level of that task.
 function! s:GetTaskIndent()
-    if getline('.') =~ '^\s*- '
+    if getline('.') =~ s:task_or_section_regex
         " What is the indentation level of this task?
         let matches = matchlist(getline('.'), '\v^(\s{-})[^ ]')
         let indent = len(matches[1])
@@ -178,7 +183,7 @@ function! s:FindTaskStart(move)
         let flags .= 'n'
     endif
 
-    return search('^\s*- ', flags)
+    return search(s:task_or_section_regex, flags)
 endfunction
 
 " ============================================================================
@@ -231,7 +236,7 @@ function! s:FindTaskParent()
         return 0
     else
         let parent_indent = indent - &tabstop
-        let parent_line = search('^\s\{'.parent_indent.'}[^ ]', 'bnW')
+        let parent_line = search('^\s\{'.parent_indent.'}\S', 'bnW')
         return parent_line
     endif
 endfunction
@@ -251,7 +256,7 @@ function! s:FindNextSibling()
     " line', beyond which we cannot search for siblings.
     if indent > 0
         let parent_indent = indent - &tabstop
-        let boundary_line = search('^\s\{0,'.parent_indent.'}[^ ]', 'nW')
+        let boundary_line = search('^\s\{0,'.parent_indent.'}\S', 'nW')
         if boundary_line == 0
             " no more tasks below our indent level
             let boundary_line = line('$')
@@ -262,7 +267,7 @@ function! s:FindNextSibling()
         let boundary_line = line('$')
     endif
 
-    return search('^\s\{'.indent.'}-', 'nW', boundary_line-1)
+    return search('^\s\{'.indent.'}\S', 'nW', boundary_line-1)
 endfunction
 
 " ============================================================================
@@ -711,6 +716,12 @@ endfunction
 function! s:AddNextTimeToTask()
     " If we are not on a task line right now, we need to search up for one.
     call s:FindTaskStart(1)
+
+    " Don't add Times to Sections
+    if getline('.') =~ s:section_regex
+        call s:EchoWarning("Times can only be added to tasks, not sections.")
+        return
+    endif
 
     " What is the indentation level of this task?
     let indent = s:GetTaskIndent()
