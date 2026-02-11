@@ -201,8 +201,7 @@ function! s:FindTaskEnd(move)
         " Search downward, looking for either the end of the task block or
         " start/end notes and record them. Begin on the line immediately
         " following the task line.
-
-        let task_end_line = search('^\($\|\s\{0,'.indent.'}[^ ]\)', 'nW')
+        let task_end_line = search('^\(\s\{0,'.indent.'}[^ ]\)', 'nW')
     endif
 
     if task_end_line == 0
@@ -909,6 +908,11 @@ function! QTFoldLevel(linenum)
     let pre_indent = indent(a:linenum-1) / &tabstop
     let cur_indent = indent(a:linenum) / &tabstop
     let nxt_indent = indent(a:linenum+1) / &tabstop
+
+    " fold blank lines with task
+    if getline(a:linenum) =~ '^\s*$'
+        return "="
+    endif
 
     if nxt_indent == cur_indent + 1
         return '>'.nxt_indent
