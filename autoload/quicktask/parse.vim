@@ -53,7 +53,7 @@ function! quicktask#parse#QTParseTask(line, ...)
     endif
 
     if a:0 > 1
-        let depth = a:2 + 1
+        let depth = a:2
     else
         let depth = 1
     endif
@@ -107,7 +107,7 @@ function! quicktask#parse#QTParseTask(line, ...)
 
         if line =~ s:task_or_section_regex && cur_indent > indent
             " this line is the start of a child task
-            let subtask = quicktask#parse#QTParseTask(current_line, sections, depth)
+            let subtask = quicktask#parse#QTParseTask(current_line, sections, depth+1)
             let subtask.parent = task
             let task.children += [subtask]
 
