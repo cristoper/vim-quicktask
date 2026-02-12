@@ -106,6 +106,11 @@ endfunction
 " ============================================================================
 " CheckSnipsReadiness(): Check snips settings; can we use snips? {{{1
 function! quicktask#snip#CheckSnipsReadiness()
+    " ensure that snips path ends in a '/'
+    if g:quicktask_snip_path !~ '/$'
+        let g:quicktask_snip_path = g:quicktask_snip_path .. "/"
+    endif
+
     if !exists("g:quicktask_snip_path") || !len(g:quicktask_snip_path)
         call quicktask#utils#EchoWarning("You cannot use snips because your snips path is not configured.")
         return 0
