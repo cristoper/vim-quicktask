@@ -213,7 +213,6 @@ function! quicktask#parse#FindTaskAtLine(tree, line)
     endif
 
     for child in a:tree.children
-        echom "  "..child.task.." ("..child.line..")"
         let found = quicktask#utils#FindTaskAtLine(child, a:line)
         if !empty(found)
             return found
