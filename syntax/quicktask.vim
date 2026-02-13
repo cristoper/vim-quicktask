@@ -41,15 +41,13 @@ syn match   quicktaskTask           '^\(\s*\)-.\{-}\n\%(\1[^-*]\{-}\n\)*'
                                     \ contains=quicktaskMarker,quicktaskTicket,@Spell,quicktaskConstant,
                                     \ quicktaskDatestamp,quicktaskTimestamp,quicktaskSnip,quicktaskUsername
 
-syn match   quicktaskNoteCont       /^\s\+[^-*@ ].*$/ contained nextgroup=quicktaskNoteCont,quicktaskNote skipnl
+syn region quicktaskNote 
+                                    \ start=/^\s\+\*\s/ 
+                                    \ end=/^\ze\s*[-*@\$]/ 
+                                    \ skipnl
                                     \ contains=quicktaskMarker,quicktaskTicket,@Spell,quicktaskConstant,
                                     \ quicktaskDone,quicktaskDatestamp,quicktaskTimestamp,quicktaskSnip,
                                     \ quicktaskIncomplete,quicktaskUsername
-
-syn match   quicktaskNote           /^\s\+[*]\s.*$/ nextgroup=quicktaskNoteCont skipnl
-                                    \ contains=quicktaskNoteCont,quicktaskMarker,quicktaskTicket,@Spell,
-                                    \ quicktaskConstant,quicktaskDone,quicktaskDatestamp,quicktaskTimestamp,
-                                    \ quicktaskSnip,quicktaskIncomplete,quicktaskUsername
 
 syn match   quicktaskTimeNote       /^\s\+[@]\s\(Added\|Start\|Time\|DONE\).*$/
                                     \ contains=quicktaskMarker,quicktaskTicket,@Spell,quicktaskConstant,

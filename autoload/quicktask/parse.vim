@@ -152,8 +152,33 @@ function! quicktask#parse#QTParseTask(line, ...)
 
         let note_line = matchlist(line, '\v^\s*\* (.*)$')
         if !empty(note_line)
-            let task.notes += [note_line[1]]
-            let current_line = current_line + 1
+            " save cursor
+            let save_cursor = getcurpos()
+            call cursor(current_line, 0)
+
+            let note = note_line[1]
+            " To support multi-line notes, treat this line and all lines to
+            " the next line with a recognized prefix as part of this note
+            let note_end = search('\v^(\S|\s*(-|\*|\@|\$))', 'nW')
+            call setpos('.', save_cursor)
+
+            if note_end == 0
+                let note_end = line('$')+1
+            endif
+            let note_end -= 1 " don't include non-note next line
+
+            if note_end > current_line
+                " we have a multi-line note
+                " need to remove cur_indent from each line
+                let note_multilines = getline(current_line+1, note_end)
+                for line in note_multilines
+                    let line = substitute(line, '^\s\{'.cur_indent.'}', '', '')
+                    let note .= "\n" .. line
+                endfor
+            endif
+
+            let task.notes += [note]
+            let current_line = note_end + 1
             continue
         endif
 
