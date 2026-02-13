@@ -189,15 +189,30 @@ function! OpenFoldIfClosed()
 endfunction
 
 " ============================================================================
+" QTExportBuffer(): Export buffer to a custom format {{{1
 "
+" Returns a string of all nodes in the bufer. Each node is serialized by calling
+" the provided SerializeNode function.
 "
+" SerializeNode(task) - a function that takes a task and returns a string
+function! QTExportBuffer(SerializeNode)
+    let nodes = reverse(quicktask#utils#TopLevelTasks())
+    let str = ""
 
+    function! s:serialize_closure(task) closure
+        let node_str = call(a:SerializeNode, [a:task])
+        if !empty(node_str)
+            let str .= node_str
         endif
+    endfunction
 
+    for node in nodes
+        let task = quicktask#parse#QTParseTask(node)
+        call quicktask#parse#WalkTreeDF(task, function('s:serialize_closure'))
     endfor
+    return str
 endfunction
 
-endfunction
 
 " ============================================================================
 " Private mappings {{{1
@@ -238,6 +253,11 @@ if ! g:quicktask_no_mappings && ! exists('b:quicktask_did_mappings')
     nmap <unique><buffer> <CR>        <Plug>OpenSnipUnderCursor
     command -buffer -nargs=0 QTAddTaskBelow call quicktask#utils#AddTaskBelow()
     command -buffer QTUpdateTimes call quicktask#time#UpdateAllTaskTimes()
+    command -buffer QTTimeSheet call quicktask#export#BufferToCSV()
+    command -buffer QTMarkdown call quicktask#export#BufferToMarkdown()
+    command -buffer QTAsciidoc call quicktask#export#BufferToAsciidoc()
+    command -buffer QTHtml call quicktask#export#BufferToHTML()
+
     let b:quicktask_did_mappings = 1
 endif
 

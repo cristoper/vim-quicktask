@@ -20,12 +20,14 @@
 5. Abbreviations ............................... |quicktask-abbreviations|
 6. Organizing Tasks ............................ |quicktask-organizing-tasks|
 7. Time Management ............................. |quicktask-time|
-8. Using Snips ................................. |quicktask-snips|
-9. Options ..................................... |quicktask-options|
-10. Advanced Topics ............................. |quicktask-advanced-topics|
-    9.1 Setting the Filetype ................... |quicktask-adv-filetype|
-    9.2 Customizing Mappings ................... |quicktask-adv-mappings|
-11. Known Issues ............................... |quicktask-known-issues|
+8. Exporting Tasks (timesheet and outline) ..... |quicktask-export|
+    8.1 Custom Exporters ....................... |quicktask-custom-exporters|
+9. Using Snips ................................. |quicktask-snips|
+10. Options .................................... |quicktask-options|
+11. Advanced Topics ............................ |quicktask-advanced-topics|
+    11.1 Setting the Filetype .................. |quicktask-adv-filetype|
+    11.2 Customizing Mappings .................. |quicktask-adv-mappings|
+12. Known Issues ............................... |quicktask-known-issues|
 
 ===============================================================================
 1. Introduction                                 *quicktask-introduction*
@@ -132,6 +134,19 @@ of their sub-tasks, and so on.
 :QTUpdateTimes
                 Updates "@ Time" sums for all tasks in buffer.
 
+:QTTimeSheet
+                Opens a split window with a CSV row for every "@ Start" line,
+                suitable for opening in a spreadsheet program. See
+                |quicktask-time| for more on time management with Quicktask.
+
+:QTMarkdown
+:QTAsciidoc
+:QTHtml
+                These commands open a split window with the Quicktask buffer
+                converted into a basic outline in Markdown, AsciiDoc, or HTML
+                format. See |quicktask-export for more on exporting Quicktask
+                outlines.
+
 ===============================================================================
 4. Mappings                                     *quicktask-mappings*
 
@@ -203,6 +218,9 @@ mappings are configurable and that configuration is covered in
                 visible change to the buffer, though it WILL force search
                 highlighting to be turned on (see |hlsearch|). You can then
                 use "n" and "N" to navigate among the found lines.
+
+<Leader>tt      Update all "@ Time" lines with total time spent on task and
+                all of its sub-tasks.
 
 ===============================================================================
 5. Abbreviations                                *quicktask-abbreviations*
@@ -315,8 +333,82 @@ To keep "@ Time" lines in sync with "@ Start" lines, set
 manually edit the value of a "@ Start" line, you must use <leader>tt or
 :QTUpdateTimes to force "@ Time" lines to update.
 
+To export all "@ Start" lines, in all tasks in the buffer, as a CSV file
+suitable for opening in a spreadsheet program, use the ":QTTimeSheet" command.
+See the next section for more ways to export Quicktask tasks.
+
 ===============================================================================
-8. Using Snips                                  *quicktask-snips*
+8. Exporting Tasks (timesheet and outline)     *quicktask-export*
+
+Quicktask includes several commands to export all tasks in the buffer. Each
+command will open a split window populated with the exported lines ready to
+save or edit.
+
+":QTTimeSheet" will export every "@ Start" line in the buffer as a CSV file
+suitable to open in a spreadsheet program, including:
+
+- Date
+- Task name
+- Most recent section heading (if any)
+- Start time
+- End time
+- Elapsed time (HH:MM)
+- Notes
+
+The ":QTMarkdown", ":QTAsciidoc", and ":QTHtml" commands will treat the
+Quicktask buffer as an outline with Sections as document headings and notes as
+paragraphs. Snips (|quicktask-snips|) are inserted verbatim before any notes.
+
+8.1 Custom Exporters                            *quicktask-custom-exporters*
+
+In addition to the built-in export commands above, Quicktask includes a
+utility function to define your own exporters: QTExportBuffer() (defined in
+ftplugin/quicktask.vim)
+
+QTExportBuffer takes a single argument, a function reference to a function
+that takes a Quicktask node as input and returns a string representation. A
+Quicktask node is an object with the following attributes: >
+   {
+        'task': <task text>,
+        'is_section': <true if current line is a section heading>,
+        'parent': <reference to parent node>,
+        'depth': <recursion depth>,
+        'sections': [<section1>, <section2>, ...],
+        'line': <line number>,
+        'end_line': <line number of last line of task>,
+        'project': <project text>,
+        'added': <date added>,
+        'times': [[<date>. <start time>, <end time>], ...],
+        'minutes': <total minutes>,       " sum of Start,end times
+        'total_minutes': <total minutes>,  " including children's minutes
+        'has_open_time': <true if there is an open time>,
+        'notes': [<note text>, ...],
+        'children': [<task>, ...],   " empty unless recursive is true
+        'snips': [<snip name>, ...],
+        'complete': <date completed>, " empty if not DONE
+    }
+<
+QTExportBuffer() returns a string representation of the buffer after every
+node has been transformed by the provided transformation function.
+
+For example, here is how to define a simple exporter that formats a Quicktask
+buffer into a simple outline representation (stripping all notes, "@ Start"
+lines, etc.):
+>vim
+    function! s:NodeToHeading(node)
+        return a:node.task
+    endfunction
+
+    function! QTBufferToOutline()
+        let str = QTExportBuffer(function('s:NodeToHeading'))
+        call quicktask#export#OpenSplit(split(str, "\n"), "quicktask")
+    endfunction
+<
+Run the above with `:call QTBufferToOutline()` or by mapping it to a command.
+
+
+===============================================================================
+9. Using Snips                                  *quicktask-snips*
 
 Snips are a way for you to attach freeform information to task entries.
 Fundamentally snips are text files, but there is no limitation to what
@@ -350,7 +442,7 @@ To open a snip, place your cursor anywhere on the snip's ID line and press
 <CR>. This mapping is customizable, see |quicktask-adv-mappings|.
 
 ===============================================================================
-9. Options                                      *quicktask-options*
+10. Options                                      *quicktask-options*
 
 g:quicktask_default_filename                    *g:quicktask_default_filename*
     The name of the file to open when no filename is given. The current
@@ -413,9 +505,9 @@ g:quicktask_snip_win_split_direction    *g:quicktask_snip_win_split_direction*
     will split horizontally.
 
 ===============================================================================
-10. Advanced Topics                              *quicktask-advanced-topics*
+11. Advanced Topics                              *quicktask-advanced-topics*
 
-10.1 Setting the Filetype                        *quicktask-adv-filetype*
+11.1 Setting the Filetype                        *quicktask-adv-filetype*
 
 Quicktask is a filetype plugin (ftplugin), meaning that it is reliant on the
 filetype of the current file in order to operate. The Quicktask filetype is
@@ -437,7 +529,7 @@ this line to your .vimrc: >
 This tells Vim that when opening a new file or reading in a new buffer, if the
 filename matches *.quicktask, set the filetype to quicktask (see |setf|).
 
-10.2 Customizing Mappings                        *quicktask-adv-mappings*
+11.2 Customizing Mappings                        *quicktask-adv-mappings*
 
 Quicktask exposes its mappings using the <Plug> prefix, which makes them
 impossible to type on your keyboard. Those un-typable mappings are then
@@ -463,6 +555,7 @@ look like this: >
     nmap <unique> <Leader>td  <Plug>MoveTaskDown
     nmap <unique> <Leader>tS  <Plug>AddSnipToTask
     nmap <unique> <Leader>tfi <Plug>FindIncompleteTimestamps
+    nmap <unique> <Leader>tt  <Plug>UpdateTaskTimes
     nmap          <CR>        <Plug>OpenSnipUnderCursor
 <
 
@@ -472,7 +565,7 @@ name, or you can look up the keystrokes above in the |quicktask-mappings|
 section of this document.
 
 ===============================================================================
-11. Known Issues                                 *quicktask-known-issues*
+12. Known Issues                                 *quicktask-known-issues*
 
 Quicktask is a labor of love and a side project. As such, there are some
 problems, and I know about most of them. So far, the issues haven't been so

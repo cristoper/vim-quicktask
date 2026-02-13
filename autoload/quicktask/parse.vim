@@ -225,10 +225,6 @@ endfunction
 " WalkTreeDF(node, callback): Depth-first traversal the tree rooted in node
 " {{{1
 function! quicktask#parse#WalkTreeDF(node, callback)
-    if a:node == v:null
-        return
-    endif
-
     call call(a:callback, [a:node])
     for child in a:node.children
         call quicktask#parse#WalkTreeDF(child, a:callback)
