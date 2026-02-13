@@ -51,7 +51,7 @@ syn match   quicktaskNote           /^\s\+[*]\s.*$/ nextgroup=quicktaskNoteCont 
                                     \ quicktaskConstant,quicktaskDone,quicktaskDatestamp,quicktaskTimestamp,
                                     \ quicktaskSnip,quicktaskIncomplete,quicktaskUsername
 
-syn match   quicktaskTimeNote       /^\s\+[@]\s\(Added\|Start\|DONE\).*$/
+syn match   quicktaskTimeNote       /^\s\+[@]\s\(Added\|Start\|Time\|DONE\).*$/
                                     \ contains=quicktaskMarker,quicktaskTicket,@Spell,quicktaskConstant,
                                     \ quicktaskDone,quicktaskDatestamp,quicktaskTimestamp,quicktaskSnip,
                                     \ quicktaskIncomplete
