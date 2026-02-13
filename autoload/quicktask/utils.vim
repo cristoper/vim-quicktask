@@ -492,7 +492,7 @@ function! quicktask#utils#AddNextTimeToTask()
     " following the task line.
     let current_line = line('.')+1
     let matched = 0
-    while current_line <= line('$')
+    while current_line <= line('$')+1
         " If we are still at the correct indent level
         if match(getline(current_line), '\v^\s{'.indent.'}') > -1
             " If this line is a sub-task, we have reached our location.
