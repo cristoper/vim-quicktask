@@ -152,6 +152,24 @@ function! quicktask#export#NodeToHTML(task)
     
     return str
 endfunction
+"
+" ============================================================================
+" NodeToAST(): Convert node to text for debugging {{{1
+function! quicktask#export#NodeToAST(task)
+    let spaces = repeat(" ", a:task.depth*2)
+    let str = ""
+    let str .= a:task.task .. "\n"
+    let str .= spaces .. "is_section: " .. a:task.is_section .. "\n"
+    let str .= spaces .. "depth: " .. a:task.depth .. "\n"
+    let str .= spaces .. "sections: " .. join(a:task.sections, ",") .. "\n"
+    let str .= spaces .. "snips: " .. join(a:task.snips, ",") .. "\n"
+    let str .= spaces .. "times: " .. join(a:task.times, ",") .. "\n"
+    let str .= spaces .. "notes: [" .. join(a:task.notes, ",") .. "]\n"
+    let str .= spaces .. "children: " .. len(a:task.children) .. "\n"
+    let str .= "\n"
+
+    return str
+endfunction
 
 " ============================================================================
 " BufferToCSV(): Export current buffer to CSV format {{{1
@@ -177,5 +195,10 @@ endfunction
 
 function! quicktask#export#BufferToHTML()
     let str = QTExportBuffer(function('quicktask#export#NodeToHTML'))
+    call quicktask#export#OpenSplit(split(str, "\n"), "html")
+endfunction
+
+function! quicktask#export#BufferToAST()
+    let str = QTExportBuffer(function('quicktask#export#NodeToAST'))
     call quicktask#export#OpenSplit(split(str, "\n"), "html")
 endfunction
