@@ -228,6 +228,8 @@ nmap <silent> <Plug>AddNoteToTask            :call quicktask#utils#AddNoteToTask
 nmap <silent> <Plug>AddChildTask             :call quicktask#utils#AddChildTask()<CR>
 nmap <silent> <Plug>MoveTaskUp               :call quicktask#utils#MoveTaskUp()<CR>
 nmap <silent> <Plug>MoveTaskDown             :call quicktask#utils#MoveTaskDown()<CR>
+nmap <silent> <Plug>IndentTask               :call quicktask#utils#IndentTask()<CR>
+nmap <silent> <Plug>OutdentTask              :call quicktask#utils#OutdentTask()<CR>
 nmap <silent> <Plug>AddSnipToTask            :call quicktask#snip#AddSnipToTask()<CR>
 nmap <silent> <Plug>UpdateTaskTimes          :call quicktask#time#UpdateAllTaskTimes()<CR>
 nmap <silent> <Plug>FindIncompleteTimestamps :call quicktask#utils#FindIncompleteTimestamps()<CR>:silent set hlsearch \| echo<CR>
@@ -247,6 +249,8 @@ if ! g:quicktask_no_mappings && ! exists('b:quicktask_did_mappings')
     nmap <unique><buffer> <Leader>tc  <Plug>AddChildTask
     nmap <unique><buffer> <Leader>tu  <Plug>MoveTaskUp
     nmap <unique><buffer> <Leader>td  <Plug>MoveTaskDown
+    nmap <unique><buffer> <Leader>tl  <Plug>IndentTask
+    nmap <unique><buffer> <Leader>th  <Plug>OutdentTask
     nmap <unique><buffer> <Leader>tS  <Plug>AddSnipToTask
     nmap <unique><buffer> <Leader>tt  <Plug>UpdateTaskTimes
     nmap <unique><buffer> <Leader>tfi <Plug>FindIncompleteTimestamps

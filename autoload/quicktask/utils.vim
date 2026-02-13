@@ -177,7 +177,7 @@ function! quicktask#utils#FindPrevSibling()
         let boundary_line = 1
     endif
 
-    return search('^\s\{'.indent.'}-', 'bnW', boundary_line)
+    return search('^\s\{'.indent.'}\S', 'bnW', boundary_line)
 endfunction
 
 " ============================================================================
@@ -187,6 +187,32 @@ function! quicktask#utils#SelectTask()
     let end_line = quicktask#utils#FindTaskEnd(0)
 
     execute "normal V".end_line."G"
+endfunction
+
+" ============================================================================
+" IndentTask(): Indent the current task. {{{1
+function! quicktask#utils#IndentTask()
+    " Only allow indenting if this task has a sibling above it
+    let sibling = quicktask#utils#FindPrevSibling()
+    if sibling == 0
+        call quicktask#utils#EchoWarning("Cannot indent task without a sibling above it")
+        return
+    endif
+
+    call quicktask#utils#SelectTask()
+    execute "normal >"
+endfunction
+
+" ============================================================================
+" OutdentTask(): Outdent the current task. {{{1
+function! quicktask#utils#OutdentTask()
+    " Only allow outdenting if we're not already at column 0
+    if quicktask#utils#GetTaskIndent() == 0
+        call quicktask#utils#EchoWarning("Cannot outdent task that is already at column 0")
+        return
+    endif
+    call quicktask#utils#SelectTask()
+    execute "normal <"
 endfunction
 
 " ============================================================================

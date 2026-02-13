@@ -188,6 +188,11 @@ mappings are configurable and that configuration is covered in
                 only be moved up and down among sibling tasks, so they will
                 not move between sections (projects).
 
+<Leader>tl      Indent the current task. Tasks can only be indented if they
+                have a sibling above them.
+
+<Leader>th      Outdent the current task (move it to the left).
+
 <Leader>tD      Mark a task as "done." This adds a new "note" line at the end
                 of the task with the "DONE" keyword and a timestamp. It is
                 important to keep in mind that the "DONE" keyword has meaning
@@ -553,6 +558,8 @@ look like this: >
     nmap <unique> <Leader>tc  <Plug>AddChildTask
     nmap <unique> <Leader>tu  <Plug>MoveTaskUp
     nmap <unique> <Leader>td  <Plug>MoveTaskDown
+    nmap <unique> <Leader>tl  <Plug>IndentTask
+    nmap <unique> <Leader>th  <Plug>OutdentTask
     nmap <unique> <Leader>tS  <Plug>AddSnipToTask
     nmap <unique> <Leader>tfi <Plug>FindIncompleteTimestamps
     nmap <unique> <Leader>tt  <Plug>UpdateTaskTimes
