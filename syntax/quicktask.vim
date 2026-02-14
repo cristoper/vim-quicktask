@@ -43,7 +43,7 @@ syn match   quicktaskTask           '^\(\s*\)-.\{-}\n\%(\1[^-*]\{-}\n\)*'
 
 syn region quicktaskNote 
                                     \ start=/^\s\+\*\s/ 
-                                    \ end=/^\ze\s*[-*@\$]/ 
+                                    \ end=/^\ze\(\S\|\s*[-*@\$]\)/ 
                                     \ skipnl
                                     \ contains=quicktaskMarker,quicktaskTicket,@Spell,quicktaskConstant,
                                     \ quicktaskDone,quicktaskDatestamp,quicktaskTimestamp,quicktaskSnip,
