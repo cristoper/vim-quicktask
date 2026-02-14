@@ -191,7 +191,7 @@ endfunction
 " ============================================================================
 " QTExportBuffer(): Export buffer to a custom format {{{1
 "
-" Returns a string of all nodes in the bufer. Each node is serialized by calling
+" Returns a string of all nodes in the buffer. Each node is serialized by calling
 " the provided SerializeNode function.
 "
 " SerializeNode(task) - a function that takes a task and returns a string
@@ -216,7 +216,8 @@ endfunction
 
 " ============================================================================
 " Private mappings {{{1
-nmap <silent> <Plug>SelectTask               :call quicktask#utils#SelectTask()<CR>
+map <silent> <Plug>SelectTask               :call quicktask#utils#SelectTask(0)<CR>
+map <silent> <Plug>SelectNoBlanksTask       :call quicktask#utils#SelectTask(1)<CR>
 nmap <silent> <Plug>TaskComplete             :call quicktask#utils#TaskComplete()<CR>
 nmap <silent> <Plug>ShowActiveTasksOnly      :call quicktask#utils#ShowActiveTasksOnly()<CR>
 nmap <silent> <Plug>ShowWatchedTasksOnly     :call quicktask#utils#ShowWatchedTasksOnly()<CR>
@@ -234,6 +235,18 @@ nmap <silent> <Plug>AddSnipToTask            :call quicktask#snip#AddSnipToTask(
 nmap <silent> <Plug>UpdateTaskTimes          :call quicktask#time#UpdateAllTaskTimes()<CR>
 nmap <silent> <Plug>FindIncompleteTimestamps :call quicktask#utils#FindIncompleteTimestamps()<CR>:silent set hlsearch \| echo<CR>
 nmap <silent> <Plug>OpenSnipUnderCursor      :call quicktask#snip#OpenSnip()<CR>
+
+" Movement
+nmap <silent> <Plug>MoveToNextSection        :call quicktask#utils#MoveToNextSection(v:count1)<CR>
+nmap <silent> <Plug>MoveToPrevSection        :call quicktask#utils#MoveToPrevSection(v:count1)<CR>
+nmap <silent> <Plug>MovePrevSibling          :call quicktask#utils#MoveToPrevSibling()<CR>
+nmap <silent> <Plug>MoveNextSibling          :call quicktask#utils#MoveToNextSibling()<CR>
+nmap <silent> <Plug>MoveToParent             :call quicktask#utils#MoveToParentTask()<CR>
+nmap <silent> <Plug>MoveToChild              :call quicktask#utils#MoveToChildTask()<CR>
+nmap <silent> <Plug>MovePrevTask             :<C-u>call quicktask#utils#MoveToPrevTask(v:count1)<CR>
+nmap <silent> <Plug>MoveNextTask             :<C-u>call quicktask#utils#MoveToNextTask(v:count1)<CR>
+nmap <silent> <Plug>MoveTopSibling           :call quicktask#utils#MoveToFirstSibling()<CR>
+nmap <silent> <Plug>MoveBottomSibling        :call quicktask#utils#MoveToLastSibling()<CR>
 
 " Public mappings {{{1
 if ! g:quicktask_no_mappings && ! exists('b:quicktask_did_mappings')
@@ -255,6 +268,25 @@ if ! g:quicktask_no_mappings && ! exists('b:quicktask_did_mappings')
     nmap <unique><buffer> <Leader>tt  <Plug>UpdateTaskTimes
     nmap <unique><buffer> <Leader>tfi <Plug>FindIncompleteTimestamps
     nmap <unique><buffer> <CR>        <Plug>OpenSnipUnderCursor
+
+    " Movement maps
+    nmap <silent><buffer> [s          <Plug>MoveToPrevSection
+    nmap <silent><buffer> ]s          <Plug>MoveToNextSection
+    nmap <silent><buffer> [[          <Plug>MovePrevTask
+    nmap <silent><buffer> ]]          <Plug>MoveNextTask
+    nmap <silent><buffer> [t          <Plug>MoveTopSibling
+    nmap <silent><buffer> ]t          <Plug>MoveBottomSibling
+    nmap <silent><buffer> <C-k>       <Plug>MovePrevSibling
+    nmap <silent><buffer> <C-j>       <Plug>MoveNextSibling
+    nmap <silent><buffer> <C-h>       <Plug>MoveToParent
+    nmap <silent><buffer> <C-l>       <Plug>MoveToChild
+
+    " Operator pending
+    xmap it <Plug>SelectNoBlanksTask
+    xmap at <Plug>SelectTask
+    omap it <Plug>SelectNoBlanksTask
+    omap at <Plug>SelectTask
+
     command -buffer -nargs=0 QTAddTaskBelow call quicktask#utils#AddTaskBelow()
     command -buffer QTUpdateTimes call quicktask#time#UpdateAllTaskTimes()
     command -buffer QTTimeSheet call quicktask#export#BufferToCSV()
