@@ -432,13 +432,13 @@ function! quicktask#utils#MoveTaskUp()
         " match on the current line if the match is prior to the cursor
         " position.
         call cursor(task_start, 0)
-        let prev_sibling_line = search('^\s\{'.indent.'}-', 'bnW')
+        let prev_sibling_line = search('^\s\{'.indent.'}[^\t \@\*]', 'bnW')
 
         " __Find our parent.__
         " We assume that our parent is one indent level lower than we are.
         let parent_indent = indent - &tabstop
         " Find the parent line.
-        let parent_line = search('^\s\{'.parent_indent.'}-', 'bnW')
+        let parent_line = search('^\s\{'.parent_indent.'}[^\t \@\*]', 'bnW')
 
         " If the previous sibling is before the parent line in the file then
         " we should not move this task! Display a warning and abort.
@@ -454,11 +454,9 @@ function! quicktask#utils#MoveTaskUp()
     call cursor(task_start, 0)
 
     " Is the preceding line at the same or greater indent?
-    if match(getline(task_start-1), '^\s\{'.indent.',}') > -1
+    if match(getline(task_start-1), '^\(\s*$\|\s\{'.indent.',}\)') > -1
         " Search to the previous task at the same indent.
-        call search('^\s\{'.indent.'}-', 'bW')
-        "call cursor(task_start-1, 0)
-        "call quicktask#utils#FindTaskStart()
+        call search('^\s\{'.indent.'}[^\t \@\*]', 'bW')
         let final_line = line('.')
         call quicktask#utils#MoveTaskDown()
         call cursor(final_line, 0)
