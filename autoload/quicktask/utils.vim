@@ -177,7 +177,7 @@ function! quicktask#utils#FindPrevSibling()
         let boundary_line = 1
     endif
 
-    return search('^\s\{'.indent.'}\S', 'bnW', boundary_line)
+    return search('^\s\{'.indent.'}[^\t \@#]', 'bnW', boundary_line)
 endfunction
 
 " ============================================================================
@@ -721,4 +721,3 @@ endfunction
 function! quicktask#utils#TopLevelTasks()
      return filter(range(line('$'), 1, -1), 'getline(v:val) =~ "^[^\\t #]"')
  endfunction
-
