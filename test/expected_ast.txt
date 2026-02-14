@@ -1,0 +1,73 @@
+Heading 1:
+  is_section: 1
+  depth: 1
+  sections: Heading 1
+  snips: 
+  times: 
+  notes: []
+  children: 3
+
+  - A todo task with no notes
+    is_section: 0
+    depth: 2
+    sections: Heading 1
+    snips: 
+    times: ['Fri 2026-02-13', '20:04', '21:24'],['Sat 2026-02-14', '13:00', '21:24']
+    notes: []
+    children: 0
+
+  - Second task
+    is_section: 0
+    depth: 2
+    sections: Heading 1
+    snips: 
+    times: ['Sun 2026-02-15', '20:25', '21:25']
+    notes: []
+    children: 1
+
+    Child Section:
+      is_section: 1
+      depth: 3
+      sections: Heading 1,Child Section
+      snips: 
+      times: 
+      notes: []
+      children: 2
+
+      - Idea in subsection
+        is_section: 0
+        depth: 4
+        sections: Heading 1,Child Section
+        snips: 
+        times: 
+        notes: [With a note
+spanning multiple lines]
+        children: 0
+
+      - Another task
+        is_section: 0
+        depth: 4
+        sections: Heading 1,Child Section
+        snips: 
+        times: ['Fri 2026-02-13', '21:26', '']
+        notes: [This note is another paragraph,As is this one]
+        children: 0
+
+  - Back to root heading
+    is_section: 0
+    depth: 2
+    sections: Heading 1
+    snips: 
+    times: 
+    notes: [Example note]
+    children: 0
+
+COMPLETED TASKS:
+  is_section: 1
+  depth: 1
+  sections: COMPLETED TASKS
+  snips: 
+  times: 
+  notes: []
+  children: 0
+
