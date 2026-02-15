@@ -41,7 +41,7 @@ function! quicktask#parse#QTParseTask(line, ...)
     let save_cursor = getcurpos()
     call cursor(a:line, 0)
     let start_line = quicktask#utils#FindTaskStart(1)
-    let end_line = quicktask#utils#FindTaskEnd(0)
+    let end_line = quicktask#utils#FindTaskEnd(v:false, v:false)
     let indent = quicktask#utils#GetTaskIndent()
     let curline = getline(start_line)
     let is_section = curline =~ s:section_regex

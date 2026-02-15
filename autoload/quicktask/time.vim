@@ -41,7 +41,7 @@ function! quicktask#time#UpdateTasksTime(tasks)
 
         " Move to the start of the task
         call cursor(task.line, 0)
-        let task_end_line = quicktask#utils#FindTaskEnd(0)
+        let task_end_line = quicktask#utils#FindTaskEnd(v:false, v:false)
         let indent = quicktask#utils#GetTaskIndent() + &tabstop
         let physical_indent = repeat(" ", indent)
 

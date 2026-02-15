@@ -54,6 +54,11 @@ function! quicktask#utils#FindTaskStart(move)
         let flags .= 'n'
     endif
 
+    " If the current line is blank, then we are not in a task. Don't move.
+    if getline('.') =~ '^$'
+        return 0
+    endif
+
     return search(s:task_or_section_regex, flags)
 endfunction
 
@@ -64,7 +69,10 @@ endfunction
 " line, we first search backwards for a task line. We then search forward for
 " the first line that isn't a part of that task, which may be the next task,
 " the next section, or the end of the file.
-function! quicktask#utils#FindTaskEnd(move)
+"
+" If exclude_blanks is true, then blank (^$) lines will NOT be included as part
+" of the task
+function! quicktask#utils#FindTaskEnd(move, exclude_blanks)
     " If we are not on a task line
     call quicktask#utils#FindTaskStart(1)
     let task_end_line = line('.')
@@ -77,7 +85,12 @@ function! quicktask#utils#FindTaskEnd(move)
         " Search downward, looking for either the end of the task block or
         " start/end notes and record them. Begin on the line immediately
         " following the task line.
-        let task_end_line = search('^\(\s\{0,'.indent.'}[^ ]\)', 'nW')
+        let task_end_regex = '\s\{0,'.indent.'}[^\t ]'
+        if a:exclude_blanks
+            let task_end_line = search('^\('.. task_end_regex .. '\|\s*$\)', 'nW')
+        else
+            let task_end_line = search('^' .. task_end_regex, 'nW')
+        endif
     endif
 
     if task_end_line == 0
@@ -182,9 +195,12 @@ endfunction
 
 " ============================================================================
 " SelectTask(): Create a linewise visual selection of the current task. {{{1
-function! quicktask#utils#SelectTask()
+"
+" If exclude_blanks is true, then any empty or white-space only lines after
+" the task will NOT be selected
+function! quicktask#utils#SelectTask(exclude_blanks)
     call quicktask#utils#FindTaskStart(1)
-    let end_line = quicktask#utils#FindTaskEnd(0)
+    let end_line = quicktask#utils#FindTaskEnd(v:false, a:exclude_blanks)
 
     execute "normal V".end_line."G"
 endfunction
@@ -199,7 +215,7 @@ function! quicktask#utils#IndentTask()
         return
     endif
 
-    call quicktask#utils#SelectTask()
+    call quicktask#utils#SelectTask(v:false)
     execute "normal >"
 endfunction
 
@@ -211,7 +227,7 @@ function! quicktask#utils#OutdentTask()
         call quicktask#utils#EchoWarning("Cannot outdent task that is already at column 0")
         return
     endif
-    call quicktask#utils#SelectTask()
+    call quicktask#utils#SelectTask(v:false)
     execute "normal <"
 endfunction
 
@@ -298,7 +314,7 @@ function! quicktask#utils#AddTaskBelow()
         endif
 
         " Find the end of the task and note the line number
-        call quicktask#utils#FindTaskEnd(1)
+        call quicktask#utils#FindTaskEnd(v:true, v:true)
         let task_line_num = line('.')
     endif
 
@@ -321,7 +337,7 @@ function! quicktask#utils#AddChildTask()
         let indent = indent + &tabstop
     endif
 
-    call quicktask#utils#FindTaskEnd(1)
+    call quicktask#utils#FindTaskEnd(v:true, v:true)
     call quicktask#utils#AddTask(line('.'), indent, 1)
 endfunction
 
@@ -392,7 +408,7 @@ function! quicktask#utils#MoveTaskDown()
         call quicktask#utils#EchoWarning("This task has no siblings below it. To move the task elsewhere, use delete/put.")
         return
     else
-        call quicktask#utils#FindTaskEnd(1)
+        call quicktask#utils#FindTaskEnd(v:true, v:false)
         let task_end = line('.')
         call cursor(task_start, 0)
     endif
@@ -403,7 +419,7 @@ function! quicktask#utils#MoveTaskDown()
     execute "silent! ".task_start.",".task_end."d"
 
     "Find the end of the task that is now our moved task's prior sibling.
-    call quicktask#utils#FindTaskEnd(1)
+    call quicktask#utils#FindTaskEnd(v:true, v:false)
     let insert_line = line('.')
     call append(insert_line, task_text)
     call cursor(insert_line+1, 0)
