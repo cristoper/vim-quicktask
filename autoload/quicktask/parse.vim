@@ -159,7 +159,7 @@ function! quicktask#parse#QTParseTask(line, ...)
             let note = note_line[1]
             " To support multi-line notes, treat this line and all lines to
             " the next line with a recognized prefix as part of this note
-            let note_end = search('\v^(\S|\s*(-|\*|\@|\$))', 'nW')
+            let note_end = search('\v^($|\S|\s*(-|\*|\@|\$))', 'nW')
             call setpos('.', save_cursor)
 
             if note_end == 0
