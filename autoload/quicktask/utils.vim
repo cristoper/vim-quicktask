@@ -148,6 +148,13 @@ endfunction
 " has the same indent. If the current task is a child, only find siblings
 " within the same parent.
 function! quicktask#utils#FindNextSibling()
+    " If we are on a blank line or top-level comment (#), just find the next
+    " task in buffer
+    let cur_line = getline('.')
+    if cur_line =~ '^[#$]'
+        return search(s:task_or_section_regex, 'nW')
+    endif
+
     call quicktask#utils#FindTaskStart(1)
     let indent = quicktask#utils#GetTaskIndent()
 
@@ -177,6 +184,13 @@ endfunction
 " has the same indent. If the current task is a child, only find siblings
 " within the same parent.
 function! quicktask#utils#FindPrevSibling()
+    " If we are on a blank line or top-level comment (#), just move to the
+    " first task above us in the buffer
+    let cur_line = getline('.')
+    if cur_line =~ '^[#$]'
+        return search(s:task_or_section_regex, 'nbW')
+    endif
+
     call quicktask#utils#FindTaskStart(1)
     let indent = quicktask#utils#GetTaskIndent()
 
@@ -791,6 +805,14 @@ endfunction
 " ===========================================================================
 " MoveToPrevTask(): Move to the previous task. {{{1
  function! quicktask#utils#MoveToPrevTask(count)
+     " If we're on a blank or comment line, move directly to the task above us
+     " in the buffer
+     let cur_line = getline('.')
+     if cur_line =~ '^[#$]'
+         call search(s:task_or_section_regex, 'bW')
+         return
+     endif
+
      for _ in range(a:count)
          call quicktask#utils#FindTaskStart(1)
          let prev = search(s:task_or_section_regex, 'bW')
