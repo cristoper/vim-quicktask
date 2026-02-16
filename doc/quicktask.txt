@@ -17,6 +17,9 @@
 2. Getting Started ............................. |quicktask-getting-started|
 3. Commands .................................... |quicktask-commands|
 4. Mappings .................................... |quicktask-mappings|
+    4.1 Editing Mappings ....................... |quicktask-editing-mappings|
+    4.1.1 Operator Pending Mappings ............ |quicktask-operator-pending-mappings|
+    4.2 Movement Mappings ...................... |quicktask-movement-mappings|
 5. Abbreviations ............................... |quicktask-abbreviations|
 6. Organizing Tasks ............................ |quicktask-organizing-tasks|
 7. Time Management ............................. |quicktask-time|
@@ -151,10 +154,12 @@ of their sub-tasks, and so on.
 4. Mappings                                     *quicktask-mappings*
 
 Nearly all of Quicktask's functionality is exposed through keyboard shortcuts
-(or "mappings" in Vim parlance). All Quicktask mappings begin with <Leader>t
+(or "mappings" in Vim parlance). Most Quicktask mappings begin with <Leader>t
 which is short for "task." This section describes the default mappings; these
 mappings are configurable and that configuration is covered in
 |quicktask-advanced-topics|.
+
+4.1 Editing Mappings                            *quicktask-editing-mappings*
 
 <Leader>to      Insert a new task below the current task (similar to how
                 typing "o" in Normal mode inserts on the next line).
@@ -226,6 +231,48 @@ mappings are configurable and that configuration is covered in
 
 <Leader>tt      Update all "@ Time" lines with total time spent on task and
                 all of its sub-tasks.
+
+4.1.1 Operator Pending Mappings                *quicktask-operator-pending-mappings*
+
+These mappings allow using tasks/sections as the objects of motion
+|operator|s in normal or visual mode:
+
+at              Act on the current task and its children including blank lines
+                (mnemonic: "around task" or "a task"). For example: dat
+                ("delete a task"), cat ("change a task"), yat ("yank a task"),
+                etc.
+it              Act on the current task but only up to and not including any
+                blank lines (mnemonic: "inner task"). For example: dit
+                ("delete inner task"), cit ("change inner task"), yit ("yank
+                inner task"), etc.
+
+4.2 Movement Mappings                           *quicktask-movement-mappings*
+
+These mappings allow rapidly navigating a Quicktask buffer as an outline.
+
+[s              Move to the previous section heading.
+
+]s              Move to the next section heading.
+
+[[              Move to the previous task or section regardless of indentation.
+
+]]              Move to the next task or section regardless of indentation.
+
+[t              Move to the first sibling of the current task.
+
+]t              Move to the last sibling of the current task.
+
+<C-k>          Move to the previous sibling task. If no previous sibling
+               exists, move to the immediate parent. This allows moving up the
+               task tree.
+
+<C-j>          Move to the next sibling task. If no next sibling exists,
+               move to the first child task (if any). This allows moving down
+               the task tree.
+
+<C-h>          Move to the parent task.
+
+<C-l>          Move to the first child task.
 
 ===============================================================================
 5. Abbreviations                                *quicktask-abbreviations*
