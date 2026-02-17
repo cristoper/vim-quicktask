@@ -139,31 +139,23 @@ endfunction
  " ===========================================================================
  " MoveToNextSection(): Move to the next section heading. {{{1
  function! quicktask#move#MoveToNextSection(count) abort
-     let next = 0
      for _ in range(a:count)
-         let next_section = search(s:section_regex, 'nW')
+         let next_section = search(s:section_regex, 'W')
          if next_section == 0
-             break
+             call quicktask#utils#EchoWarning("No next section heading found")
+             return
          endif
-         let next = next_section
      endfor
-     if next == 0
-         call quicktask#utils#EchoWarning("No next section heading found")
-     else
-         call cursor(next, 0)
-     endif
  endfunction
 
  " ===========================================================================
  " MoveToPrevSection(): Move to the previous section heading. {{{1
  function! quicktask#move#MoveToPrevSection(count) abort
-     let prev = 0
      for _ in range(a:count)
-         let prev = search(s:section_regex, 'bnW')
+         let prev = search(s:section_regex, 'bW')
          if prev == 0
              call quicktask#utils#EchoWarning("No previous section heading found")
              return
          endif
-         call cursor(prev, 0)
      endfor
  endfunction
