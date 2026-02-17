@@ -1,7 +1,7 @@
 " quicktask.vim: A lightweight task management plugin.
 
 let s:one_indent = repeat(" ", &tabstop)
-let s:section_regex = '\v^\s*[^-].*:\s*$'
+let s:section_regex = '\v^\s*[^\t -].*:\s*$'
 let s:task_or_section_regex = '\v^(\s{-}- |.*:\s*$)'
 
 " ============================================================================
@@ -899,7 +899,7 @@ endfunction
          let next = next_section
      endfor
      if next == 0
-         call quicktask#utils#EchoWarning("No next heading found")
+         call quicktask#utils#EchoWarning("No next section heading found")
      else
          call cursor(next, 0)
      endif
@@ -912,7 +912,7 @@ endfunction
      for _ in range(a:count)
          let prev = search(s:section_regex, 'bnW')
          if prev == 0
-             call quicktask#utils#EchoWarning("No previous heading found")
+             call quicktask#utils#EchoWarning("No previous section heading found")
              return
          endif
          call cursor(prev, 0)
