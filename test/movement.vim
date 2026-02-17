@@ -4,6 +4,9 @@ let s:assert = themis#helper('assert')
 let s:test_dir = expand('<sfile>:p:h')
 let s:test_file = s:test_dir.."/test.qt"
 
+let s:task_lines = [3,5,11,16,17,21,25,28]
+
+
 " This runs before every single test function
 function! s:suite.before_each()
   enew! " Create a new empty buffer
@@ -57,24 +60,22 @@ function! s:suite.test_move_to_next_task()
   " Move to "Child Section" then check that MoveToNextTask() goes to child
   " task and then sibling task
   call cursor(1,1)
-  let task_lines = [3,5,11,15,16,20,24,27]
 
-  for line in task_lines
+  for line in s:task_lines
     call quicktask#utils#MoveToNextTask(1)
     call s:assert.equals(line('.'), line)
   endfor
   
   " Try to move beyond last task
   call quicktask#utils#MoveToNextTask(1)
-  call s:assert.equals(line('.'), 27) " Should stay at last section
+  call s:assert.equals(line('.'), 28) " Should stay at last section
 endfunction
 
 function! s:suite.test_move_to_prev_task()
   " Move to last task then check that MoveToPrevTask() goes to sibling task
   " and then child task
-  " Move to last task (line 27)
   call cursor('$', 1)
-  let task_lines = [3,5,11,15,16,20,24,27]
+  let task_lines = copy(s:task_lines)
   let task_lines = reverse(task_lines)
   
   for line in task_lines
@@ -98,11 +99,11 @@ function! s:suite.test_move_to_last_sibling()
   " Move to a child task (line 7)
   call cursor(12, 1)
   call quicktask#utils#MoveToLastSibling()
-  call s:assert.equals(line('.'), 24)
+  call s:assert.equals(line('.'), 25)
   
   " Calling again should not move
   call quicktask#utils#MoveToLastSibling()
-  call s:assert.equals(line('.'), 24) " Should stay at same line
+  call s:assert.equals(line('.'), 25) " Should stay at same line
 endfunction
 
 function! s:suite.test_move_to_prev_sibling()
@@ -119,15 +120,15 @@ endfunction
 function! s:suite.test_move_to_next_sibling()
   call cursor(12, 1)
   call quicktask#utils#MoveToNextSibling()
-  call s:assert.equals(line('.'), 24)
+  call s:assert.equals(line('.'), 25)
   
   " Try to move next when no next sibling exists
   call quicktask#utils#MoveToNextSibling()
-  call s:assert.equals(line('.'), 24) " Should move to child task
+  call s:assert.equals(line('.'), 25) " Should move to child task
 endfunction
 
 function! s:suite.test_move_to_parent_task()
-  call cursor(15, 1)  "Child Section:"
+  call cursor(16, 1)  "Child Section:"
   call quicktask#utils#MoveToParentTask()
   call s:assert.equals(line('.'), 11)
   
@@ -138,13 +139,13 @@ function! s:suite.test_move_to_parent_task()
 endfunction
 
 function! s:suite.test_move_to_child_task()
-  call cursor(15, 1)
+  call cursor(16, 1)
   call quicktask#utils#MoveToChildTask()
-  call s:assert.equals(line('.'), 16) " Should move to first child
+  call s:assert.equals(line('.'), 17) " Should move to first child
   
   " Try to move to child when no children exist
   call quicktask#utils#MoveToChildTask()
-  call s:assert.equals(line('.'), 16) " Should stay at same line
+  call s:assert.equals(line('.'), 17) " Should stay at same line
 endfunction
 
 "
@@ -152,7 +153,7 @@ endfunction
 "
 function! s:suite.test_select_task()
   " Test SelectTask with blanks (should select task including blank lines)
-  call cursor(16, 1)
+  call cursor(17, 1)
   call quicktask#utils#SelectTask(v:false)
   
   " Verify we're in visual mode and selected the right area
@@ -160,13 +161,13 @@ function! s:suite.test_select_task()
   let start = line('v')
   let end = line('.')
   call s:assert.equals(mode, 'V')
-  call s:assert.equals(start, 16)
-  call s:assert.equals(end, 19)
+  call s:assert.equals(start, 17)
+  call s:assert.equals(end, 20)
 endfunction
 
 function! s:suite.test_select_no_blanks_task()
   " Test SelectTask with blanks (should select task excluding blank lines)
-  call cursor(16, 1)
+  call cursor(17, 1)
   call quicktask#utils#SelectTask(v:true)
   
   " Verify we're in visual mode and selected the right area
@@ -174,8 +175,8 @@ function! s:suite.test_select_no_blanks_task()
   let start = line('v')
   let end = line('.')
   call s:assert.equals(mode, 'V')
-  call s:assert.equals(start, 16)
-  call s:assert.equals(end, 18)
+  call s:assert.equals(start, 17)
+  call s:assert.equals(end, 19)
 endfunction
 
 " Test movement mappings
@@ -222,21 +223,20 @@ endfunction
 " Test movement mappings with <C-k> and <C-j>
 function! s:suite.test_move_to_next_task_map()
   call cursor(1,1)
-  let task_lines = [3,5,11,15,16,20,24,27]
 
-  for line in task_lines
+  for line in s:task_lines
     normal ]]
     call s:assert.equals(line('.'), line)
   endfor
   
   " Try to move beyond last task
   normal ]]
-  call s:assert.equals(line('.'), 27) " Should stay at last section
+  call s:assert.equals(line('.'), 28) " Should stay at last section
 endfunction
 
 function! s:suite.test_move_to_prev_task_map()
   call cursor('$', 1)
-  let task_lines = [3,5,11,15,16,20,24,27]
+  let task_lines = copy(s:task_lines)
   let task_lines = reverse(task_lines)
   
   for line in task_lines
@@ -250,15 +250,15 @@ function! s:suite.test_move_to_next_sibling_map()
    execute "normal \<C-j>"
    call s:assert.equals(line('.'), 3)
    execute "normal \<C-j>"
-   call s:assert.equals(line('.'), 27)
+   call s:assert.equals(line('.'), 28)
    execute "normal \<C-j>"
-   call s:assert.equals(line('.'), 27)
+   call s:assert.equals(line('.'), 28)
 endfunction
 
 function! s:suite.test_move_to_prev_sibling_map()
    call cursor('$',1) 
    execute "normal \<C-k>"
-   call s:assert.equals(line('.'), 27)
+   call s:assert.equals(line('.'), 28)
    execute "normal \<C-k>"
    call s:assert.equals(line('.'), 3)
    execute "normal \<C-k>"

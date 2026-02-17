@@ -59,6 +59,26 @@ function! quicktask#parse#QTParseTask(line, ...)
     endif
 
     let task = getline(start_line)
+    let task_end = start_line
+    
+    if !is_section
+        " To support multi-line (wrapped) notes, treat this line and all lines
+        " to the next blank line or line with a recognized prefix as part of
+        " this note
+        let task_end = search('\v^($|\S|\s*(-|\*|\@|\$))', 'nW')
+        if task_end == 0
+            let task_end = line('$')+1
+        endif
+        let task_end -= 1
+        if task_end > start_line
+            " we have a multi-line task
+            " need to remove indent from each line
+            let task_lines = getline(start_line+1, task_end)
+            for line in task_lines
+                let task .= substitute(line, '^\s\{'.indent.'}\s*', '', '')
+            endfor
+        endif
+    endif
 
     if is_section
         let label = matchstr(task, '\S.*[^:]') 
@@ -87,7 +107,7 @@ function! quicktask#parse#QTParseTask(line, ...)
     let minutes = 0
 
     " parse line-by-line
-    let current_line = start_line + 1
+    let current_line = task_end + 1
     while current_line <= end_line
         let line = getline(current_line)
         let cur_indent = quicktask#utils#GetAnyIndent(current_line)

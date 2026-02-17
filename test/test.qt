@@ -8,7 +8,8 @@ Heading 1:
     @ Start [Sat 2026-02-14] [13:00], end [21:24]
     @ Time [09:44]
 
-  - Second task
+  - Second task with a long title that is wrapped into a multiline task so that 
+    we can test the parsing of multiline tasks.
     @ Start [Sun 2026-02-15] [20:25], end [21:25]
     @ Time [01:00]
 

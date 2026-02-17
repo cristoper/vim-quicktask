@@ -16,7 +16,7 @@ Heading 1:
     notes: []
     children: 0
 
-  - Second task
+  - Second task with a long title that is wrapped into a multiline task so that we can test the parsing of multiline tasks.
     is_section: 0
     depth: 2
     sections: Heading 1
