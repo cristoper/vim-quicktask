@@ -288,11 +288,11 @@ if ! g:quicktask_no_mappings && ! exists('b:quicktask_did_mappings')
     omap at <Plug>SelectTask
 
     command -buffer -nargs=0 QTAddTaskBelow call quicktask#utils#AddTaskBelow()
-    command -buffer QTUpdateTimes call quicktask#time#UpdateAllTaskTimes()
-    command -buffer QTTimeSheet call quicktask#export#BufferToCSV()
-    command -buffer QTMarkdown call quicktask#export#BufferToMarkdown()
-    command -buffer QTAsciidoc call quicktask#export#BufferToAsciidoc()
-    command -buffer QTHtml call quicktask#export#BufferToHTML()
+    command -buffer QTUpdateTimes silent call quicktask#time#UpdateAllTaskTimes()
+    command -buffer QTTimeSheet silent call quicktask#export#BufferToCSV()
+    command -buffer QTMarkdown silent call quicktask#export#BufferToMarkdown()
+    command -buffer QTAsciidoc silent call quicktask#export#BufferToAsciidoc()
+    command -buffer QTHtml silent call quicktask#export#BufferToHTML()
 
     let b:quicktask_did_mappings = 1
 endif
