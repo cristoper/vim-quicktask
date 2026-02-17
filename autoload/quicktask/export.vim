@@ -3,7 +3,7 @@
 " 
 " data - list of lines to display
 " filetype - the filetype to set for the new buffer
-function! quicktask#export#OpenSplit(data, filetype)
+function! quicktask#export#OpenSplit(data, filetype) abort
     vnew
     setlocal buftype=nofile
     setlocal bufhidden=hide
@@ -25,7 +25,7 @@ endfunction
 " function! NodeToTimeCSV(): Convert node to list of timesheet fields {{{1
 "
 " Converts a parsed task node to a list of fields for a timesheet row.
-function! quicktask#export#NodeToTimeCSV(task)
+function! quicktask#export#NodeToTimeCSV(task) abort
     let rows = []
     for time in a:task.times
         let date = time[0]
@@ -75,7 +75,7 @@ endfunction
 " 
 " Sections become headings, notes become paragraphs, snips are inserted
 " verbatim.
-function! quicktask#export#NodeToMarkdown(task)
+function! quicktask#export#NodeToMarkdown(task) abort
     let str = ""
     if a:task.is_section
         let str .= repeat("#", a:task.depth) .. " " .. a:task.sections[-1]
@@ -102,7 +102,7 @@ endfunction
 " 
 " Sections become headings, notes become paragraphs, snips are inserted
 " verbatim.
-function! quicktask#export#NodeToAsciidoc(task)
+function! quicktask#export#NodeToAsciidoc(task) abort
     let str = ""
     if a:task.is_section
         let str .= repeat("=", a:task.depth) .. " " .. a:task.sections[-1]
@@ -131,7 +131,7 @@ endfunction
 " 
 " Sections become headings, notes become paragraphs, snips are inserted
 " verbatim.
-function! quicktask#export#NodeToHTML(task)
+function! quicktask#export#NodeToHTML(task) abort
     let str = ""
     if a:task.is_section
         let str .= "<h"..a:task.depth..">"..a:task.sections[-1].."</h"..a:task.depth..">"
@@ -155,7 +155,7 @@ endfunction
 "
 " ============================================================================
 " NodeToAST(): Convert node to text for debugging {{{1
-function! quicktask#export#NodeToAST(task)
+function! quicktask#export#NodeToAST(task) abort
     let spaces = repeat(" ", a:task.depth*2)
     let str = ""
     let str .= a:task.task .. "\n"
@@ -176,29 +176,37 @@ endfunction
 " 
 " Exports all tasks in the current buffer to a CSV format suitable for
 " importing into a timesheet or spreadsheet. Opens CSV in a split window.
-function! quicktask#export#BufferToCSV()
+function! quicktask#export#BufferToCSV() abort
     let header = "date,task,project,project_hierarchy,start,end,time,notes\n"
     let csv = QTExportBuffer(function('quicktask#export#NodeToTimeCSV'))
     let lines = header .. csv
     call quicktask#export#OpenSplit(split(lines, "\n"), "csv")
 endfunction
 
-function! quicktask#export#BufferToMarkdown()
+" ============================================================================
+" BufferToMarkdown(): Export current buffer to Markdown format {{{1
+function! quicktask#export#BufferToMarkdown() abort
     let str = QTExportBuffer(function('quicktask#export#NodeToMarkdown'))
     call quicktask#export#OpenSplit(split(str, "\n"), "markdown")
 endfunction
 
-function! quicktask#export#BufferToAsciidoc()
+" ===========================================================================
+" BufferToAsciidoc(): Export current buffer to asciidoc format {{{1
+function! quicktask#export#BufferToAsciidoc() abort
     let str = QTExportBuffer(function('quicktask#export#NodeToAsciidoc'))
     call quicktask#export#OpenSplit(split(str, "\n"), "asciidoc")
 endfunction
 
-function! quicktask#export#BufferToHTML()
+" ===========================================================================
+" BufferToHTML(): Export current buffer to HTML format {{{1
+function! quicktask#export#BufferToHTML() abort
     let str = QTExportBuffer(function('quicktask#export#NodeToHTML'))
     call quicktask#export#OpenSplit(split(str, "\n"), "html")
 endfunction
 
-function! quicktask#export#BufferToAST()
+" ===========================================================================
+" BufferToAST(): Export current buffer to AST format (debug) {{{1
+function! quicktask#export#BufferToAST() abort
     let str = QTExportBuffer(function('quicktask#export#NodeToAST'))
     call quicktask#export#OpenSplit(split(str, "\n"), "html")
 endfunction

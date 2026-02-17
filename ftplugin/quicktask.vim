@@ -195,7 +195,7 @@ endfunction
 " the provided SerializeNode function.
 "
 " SerializeNode(task) - a function that takes a task and returns a string
-function! QTExportBuffer(SerializeNode)
+function! QTExportBuffer(SerializeNode) abort
     let nodes = reverse(quicktask#utils#TopLevelTasks())
     let str = ""
 

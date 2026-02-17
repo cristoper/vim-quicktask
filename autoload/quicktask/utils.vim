@@ -47,7 +47,7 @@ endfunction
 "
 " Search backwards for a task line. This function moves the cursor.
 " If the cursor is already on a task line, do nothing.
-function! quicktask#utils#FindTaskStart(move)
+function! quicktask#utils#FindTaskStart(move) abort
     " Only move the cursor if we are asked to.
     let flags = 'bcW'
     if !a:move
@@ -72,7 +72,7 @@ endfunction
 "
 " If exclude_blanks is true, then blank (^$) lines will NOT be included as part
 " of the task
-function! quicktask#utils#FindTaskEnd(move, exclude_blanks)
+function! quicktask#utils#FindTaskEnd(move, exclude_blanks) abort
     " If we are not on a task line
     call quicktask#utils#FindTaskStart(1)
     let task_end_line = line('.')
@@ -112,7 +112,7 @@ endfunction
 "
 " Get the indent level of the current task and, if non-zero, find the first
 " line of the task that encloses this one (its 'parent').
-function! quicktask#utils#FindTaskParent()
+function! quicktask#utils#FindTaskParent() abort
     call quicktask#utils#FindTaskStart(1)
     let indent = quicktask#utils#GetTaskIndent()
 
@@ -130,7 +130,7 @@ endfunction
 "
 " Get the line number of the topmost parent the current task. If no parent,
 " return 0
-function! quicktask#utils#FindTaskTopParent()
+function! quicktask#utils#FindTaskTopParent() abort
     let line = quicktask#utils#FindTaskParent()
     let parent_line = line
     while parent_line != 0
@@ -147,7 +147,7 @@ endfunction
 " Get the indent level of the current task and find a task below this one that
 " has the same indent. If the current task is a child, only find siblings
 " within the same parent.
-function! quicktask#utils#FindNextSibling()
+function! quicktask#utils#FindNextSibling() abort
     " If we are on a blank line or top-level comment (#), just find the next
     " task in buffer
     let cur_line = getline('.')
@@ -183,7 +183,7 @@ endfunction
 " Get the indent level of the current task and find a task above this one that
 " has the same indent. If the current task is a child, only find siblings
 " within the same parent.
-function! quicktask#utils#FindPrevSibling()
+function! quicktask#utils#FindPrevSibling() abort
     " If we are on a blank line or top-level comment (#), just move to the
     " first task above us in the buffer
     let cur_line = getline('.')
@@ -212,7 +212,7 @@ endfunction
 "
 " If exclude_blanks is true, then any empty or white-space only lines after
 " the task will NOT be selected
-function! quicktask#utils#SelectTask(exclude_blanks)
+function! quicktask#utils#SelectTask(exclude_blanks) abort
     call quicktask#utils#FindTaskStart(1)
     let end_line = quicktask#utils#FindTaskEnd(v:false, a:exclude_blanks)
 
@@ -221,7 +221,7 @@ endfunction
 
 " ============================================================================
 " IndentTask(): Indent the current task. {{{1
-function! quicktask#utils#IndentTask()
+function! quicktask#utils#IndentTask() abort
     " Only allow indenting if this task has a sibling above it
     let sibling = quicktask#utils#FindPrevSibling()
     if sibling == 0
@@ -235,7 +235,7 @@ endfunction
 
 " ============================================================================
 " OutdentTask(): Outdent the current task. {{{1
-function! quicktask#utils#OutdentTask()
+function! quicktask#utils#OutdentTask() abort
     " Only allow outdenting if we're not already at column 0
     if quicktask#utils#GetTaskIndent() == 0
         call quicktask#utils#EchoWarning("Cannot outdent task that is already at column 0")
@@ -247,7 +247,7 @@ endfunction
 
 " ============================================================================
 " GetTaskText(): Get the first line of text of a task. {{{1
-function! quicktask#utils#GetTaskText()
+function! quicktask#utils#GetTaskText() abort
     let task_line_num = quicktask#utils#FindTaskStart(0)
     if task_line_num
         return getline(task_line_num)
@@ -262,7 +262,7 @@ endfunction
 "
 " Add a 'skeleton' task to the file after the line given and at the indent
 " level specified.
-function! quicktask#utils#AddTask(after, indent, move_cursor)
+function! quicktask#utils#AddTask(after, indent, move_cursor) abort
     if a:indent > 0
         let physical_indent = repeat(" ", a:indent)
     else
@@ -293,7 +293,7 @@ endfunction
 " AddTaskAbove(): Add a task above the current task. {{{1
 "
 " Add a task above the current task, at the current task's level.
-function! quicktask#utils#AddTaskAbove()
+function! quicktask#utils#AddTaskAbove() abort
     " We don't support inserting a task above a section.
   if getline('.') =~ ':$' && getline('.') !~ '^\s*-'
         call quicktask#utils#EchoWarning("Inserting a task above a section isn't supported.")
@@ -313,7 +313,7 @@ endfunction
 " AddTaskBelow(): Add a task below the current task. {{{1
 "
 " Add a task below the current task, at the current task's level.
-function! quicktask#utils#AddTaskBelow()
+function! quicktask#utils#AddTaskBelow() abort
     " We insert directly below sections.
     if getline('.') =~ ':$' && getline('.') !~ '^\s*-'
         let indent = quicktask#utils#GetAnyIndent('.') + &tabstop
@@ -338,7 +338,7 @@ endfunction
 
 " ============================================================================
 " AddChildTask(): Add a task as a child of the current task. {{{1
-function! quicktask#utils#AddChildTask()
+function! quicktask#utils#AddChildTask() abort
     " If we are not on a task line right now, we need to search up for one.
     call quicktask#utils#FindTaskStart(1)
 
@@ -359,7 +359,7 @@ endfunction
 " AddNoteToTask(): Add a new note to a task. {{{1
 "
 " Add a new note to the task.
-function! quicktask#utils#AddNoteToTask()
+function! quicktask#utils#AddNoteToTask() abort
     " If we are not on a task line right now, we need to search up for one.
     call quicktask#utils#FindTaskStart(1)
 
@@ -413,7 +413,7 @@ endfunction
 " MoveTaskDown(): Move the current task down. {{{1
 "
 " Move the current task below the following task.
-function! quicktask#utils#MoveTaskDown()
+function! quicktask#utils#MoveTaskDown() abort
     call quicktask#utils#FindTaskStart(1)
     let task_start = line('.')
 
@@ -443,7 +443,7 @@ endfunction
 " MoveTaskUp(): Move the current task up. {{{1
 "
 " Move the current task up above the preceding task.
-function! quicktask#utils#MoveTaskUp()
+function! quicktask#utils#MoveTaskUp() abort
     if line('.') == 1
         return
     endif
@@ -499,7 +499,7 @@ endfunction
 " Add the next timestamp to a task. If the task has no timestamps yet,
 " add a starting time note. If it has a start with no end, add the end.
 " If it has complete start and end notes, add a new start note.
-function! quicktask#utils#AddNextTimeToTask()
+function! quicktask#utils#AddNextTimeToTask() abort
     " If we are not on a task line right now, we need to search up for one.
     call quicktask#utils#FindTaskStart(1)
 
@@ -568,7 +568,7 @@ endfunction
 " AddStartTimeToTask(): Add a new start time to a task. {{{1
 "
 " Called by AddNextTimeToTask() to create a new start time note.
-function! quicktask#utils#AddStartTimeToTask(start, indent)
+function! quicktask#utils#AddStartTimeToTask(start, indent) abort
     " Place the cursor at the given start line.
     " call cursor(a:start, 0)
 
@@ -595,7 +595,7 @@ endfunction
 "
 " Called by AddNextTimeToTask() to append an end time to an existing start
 " time note.
-function! quicktask#utils#AddEndTimeToTask(start, indent)
+function! quicktask#utils#AddEndTimeToTask(start, indent) abort
     " Place the cursor at the given start line.
     call cursor(a:start, 0)
 
@@ -613,7 +613,7 @@ endfunction
 "
 " Mark a task as complete by placing a note at the very end of the task
 " containing the keyword DONE followed by the current timestamp.
-function! quicktask#utils#TaskComplete()
+function! quicktask#utils#TaskComplete() abort
     " If we are not on a task line right now, we need to search up for one.
     call quicktask#utils#FindTaskStart(1)
 
@@ -680,7 +680,7 @@ endfunction
 " tracking their tasks in the continuum of the universe immemorial and also to
 " locate current tasks. GetDatestamp() returns a Quicktask-formatted
 " datestamp for the requested time relative to 'now.'
-function! quicktask#utils#GetDatestamp(coordinate)
+function! quicktask#utils#GetDatestamp(coordinate) abort
     if a:coordinate == 'today'
         return '['.strftime('%a %Y-%m-%d').']'
     elseif a:coordinate == 'tomorrow'
@@ -710,14 +710,14 @@ endfunction
 "
 " The net result is that only incomplete (active) tasks remain open and
 " visible in the list.
-function! quicktask#utils#ShowActiveTasksOnly()
+function! quicktask#utils#ShowActiveTasksOnly() abort
     let current_line = line('.')
     execute "normal! zR"
     execute "g/DONE\\|HELD/call CloseFoldIfOpen()"
     call cursor(current_line, 0)
 endfunction
 
-function! quicktask#utils#ShowTodayTasksOnly()
+function! quicktask#utils#ShowTodayTasksOnly() abort
     execute "normal! zM"
     execute "g/".strftime("%Y-%m-%d")."/call OpenFoldIfClosed()"
     execute "normal! gg"
@@ -728,7 +728,7 @@ endfunction
 "
 " The net result is that only tasks that you are watching (containing "WATCH"
 " remain open and visible in the list.
-function! quicktask#utils#ShowWatchedTasksOnly()
+function! quicktask#utils#ShowWatchedTasksOnly() abort
     let current_line = line('.')
     execute "normal! zM"
     execute "g/WATCH/call OpenFoldIfClosed()"
@@ -756,7 +756,7 @@ function! quicktask#utils#TopLevelTasks()
 " MovePrevSibling(): Move to the previous sibling task. {{{1
 "
 " If task has no previous sibling, then move to parent.
-function! quicktask#utils#MoveToPrevSibling()
+function! quicktask#utils#MoveToPrevSibling() abort
     let prev_sibling = quicktask#utils#FindPrevSibling()
     if prev_sibling == 0
         call quicktask#utils#MoveToParentTask()
@@ -769,7 +769,7 @@ endfunction
 " MoveNextSibling(): Move to the next sibling task. {{{1
 "
 " If task has no next sibling, move to next child if any
-function! quicktask#utils#MoveToNextSibling()
+function! quicktask#utils#MoveToNextSibling() abort
     let next_sibling = quicktask#utils#FindNextSibling()
     if next_sibling == 0
         call quicktask#utils#MoveToChildTask()
@@ -780,7 +780,7 @@ endfunction
 
 " ============================================================================
 " MoveToParent(): Move to the parent task. {{{1
-function! quicktask#utils#MoveToParentTask()
+function! quicktask#utils#MoveToParentTask() abort
     let parent_line = quicktask#utils#FindTaskParent()
     if parent_line == 0
         call quicktask#utils#EchoWarning("No parent task found")
@@ -791,7 +791,7 @@ endfunction
 
 " ============================================================================
 " MoveToChild(): Move to the first child task. {{{1
-function! quicktask#utils#MoveToChildTask()
+function! quicktask#utils#MoveToChildTask() abort
     let task_start = quicktask#utils#FindTaskStart(0)
     let task = quicktask#parse#QTParseTask(task_start)
     if !empty(task.children)
@@ -804,7 +804,7 @@ endfunction
 
 " ===========================================================================
 " MoveToPrevTask(): Move to the previous task. {{{1
- function! quicktask#utils#MoveToPrevTask(count)
+ function! quicktask#utils#MoveToPrevTask(count) abort
      " If we're on a blank or comment line, move directly to the task above us
      " in the buffer
      let cur_line = getline('.')
@@ -826,7 +826,7 @@ endfunction
 
  " ===========================================================================
  " MoveToNextTask(): Move to the next task. {{{1
- function! quicktask#utils#MoveToNextTask(count)
+ function! quicktask#utils#MoveToNextTask(count) abort
      let next = 0
      for _ in range(a:count)
          let next_task = search(s:task_or_section_regex, 'W')
@@ -845,7 +845,7 @@ endfunction
 
  " ===========================================================================
  " MoveToFirstSibling(): Move to the first sibling of the current task. {{{1
- function! quicktask#utils#MoveToFirstSibling()
+ function! quicktask#utils#MoveToFirstSibling() abort
      let task_line = quicktask#utils#FindTaskStart(0)
      if task_line == 0
          return
@@ -867,7 +867,7 @@ endfunction
 
  " ===========================================================================
  " MoveToLastSibling(): Move to the last sibling of the current task. {{{1
- function! quicktask#utils#MoveToLastSibling()
+ function! quicktask#utils#MoveToLastSibling() abort
      let task_line = quicktask#utils#FindTaskStart(0)
      if task_line == 0
          return
@@ -889,7 +889,7 @@ endfunction
 
  " ===========================================================================
  " MoveToNextSection(): Move to the next section heading. {{{1
- function! quicktask#utils#MoveToNextSection(count)
+ function! quicktask#utils#MoveToNextSection(count) abort
      let next = 0
      for _ in range(a:count)
          let next_section = search(s:section_regex, 'nW')
@@ -907,7 +907,7 @@ endfunction
 
  " ===========================================================================
  " MoveToPrevSection(): Move to the previous section heading. {{{1
- function! quicktask#utils#MoveToPrevSection(count)
+ function! quicktask#utils#MoveToPrevSection(count) abort
      let prev = 0
      for _ in range(a:count)
          let prev = search(s:section_regex, 'bnW')
