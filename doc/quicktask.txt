@@ -234,8 +234,10 @@ mappings are configurable and that configuration is covered in
 
 4.1.1 Operator Pending Mappings                *quicktask-operator-pending-mappings*
 
-These mappings allow using tasks/sections as the objects of motion
-|operator|s in normal or visual mode:
+These mappings allow using tasks/sections as the objects of motion |operator|s
+in normal or visual mode. Hint for moving tasks around: use motions with these
+opeartors to yank/cut tasks and then |[p| and |[P| (paste at current
+indentation) to paste them into your task tree. 
 
 at              Act on the current task and its children including blank lines
                 (mnemonic: "around task" or "a task"). For example: dat
