@@ -7,19 +7,23 @@ Heading 1:
     @ Start [Fri 2026-02-13] [20:04], end [21:24]
     @ Start [Sat 2026-02-14] [13:00], end [21:24]
     @ Time [09:44]
+
   - Second task
     @ Start [Sun 2026-02-15] [20:25], end [21:25]
     @ Time [01:00]
+
     Child Section:
       - Idea in subsection
         * With a note
         spanning multiple lines
+
       - Another task
         * This note is another paragraph
         * As is this one
         @ Start [Fri 2026-02-13] [21:26]
   - Back to root heading
     * Example note
+
 COMPLETED TASKS:
 
 # vim:ft=quicktask
