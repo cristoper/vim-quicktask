@@ -216,13 +216,17 @@ endfunction
 
 " ============================================================================
 " Private mappings {{{1
-map <silent> <Plug>SelectTask               :call quicktask#utils#SelectTask(0)<CR>
-map <silent> <Plug>SelectNoBlanksTask       :call quicktask#utils#SelectTask(1)<CR>
+
+" Time and task
 nmap <silent> <Plug>TaskComplete             :call quicktask#utils#TaskComplete()<CR>
 nmap <silent> <Plug>ShowActiveTasksOnly      :call quicktask#utils#ShowActiveTasksOnly()<CR>
 nmap <silent> <Plug>ShowWatchedTasksOnly     :call quicktask#utils#ShowWatchedTasksOnly()<CR>
 nmap <silent> <Plug>ShowTodayTasksOnly       :call quicktask#utils#ShowTodayTasksOnly()<CR>
 nmap <silent> <Plug>AddNextTimeToTask        :call quicktask#utils#AddNextTimeToTask()<CR>
+nmap <silent> <Plug>UpdateTaskTimes          :call quicktask#time#UpdateAllTaskTimes()<CR>
+nmap <silent> <Plug>FindIncompleteTimestamps :call quicktask#utils#FindIncompleteTimestamps()<CR>:silent set hlsearch \| echo<CR>
+
+" Editing
 nmap <silent> <Plug>AddTaskAbove             :call quicktask#utils#AddTaskAbove()<CR>
 nmap <silent> <Plug>AddTaskBelow             :call quicktask#utils#AddTaskBelow()<CR>
 nmap <silent> <Plug>AddNoteToTask            :call quicktask#utils#AddNoteToTask()<CR>
@@ -232,11 +236,11 @@ nmap <silent> <Plug>MoveTaskDown             :call quicktask#utils#MoveTaskDown(
 nmap <silent> <Plug>IndentTask               :call quicktask#utils#IndentTask()<CR>
 nmap <silent> <Plug>OutdentTask              :call quicktask#utils#OutdentTask()<CR>
 nmap <silent> <Plug>AddSnipToTask            :call quicktask#snip#AddSnipToTask()<CR>
-nmap <silent> <Plug>UpdateTaskTimes          :call quicktask#time#UpdateAllTaskTimes()<CR>
-nmap <silent> <Plug>FindIncompleteTimestamps :call quicktask#utils#FindIncompleteTimestamps()<CR>:silent set hlsearch \| echo<CR>
 nmap <silent> <Plug>OpenSnipUnderCursor      :call quicktask#snip#OpenSnip()<CR>
 
 " Movement
+map <silent> <Plug>SelectTask               :call quicktask#utils#SelectTask(0)<CR>
+map <silent> <Plug>SelectNoBlanksTask       :call quicktask#utils#SelectTask(1)<CR>
 nmap <silent> <Plug>MoveToNextSection        :call quicktask#utils#MoveToNextSection(v:count1)<CR>
 nmap <silent> <Plug>MoveToPrevSection        :call quicktask#utils#MoveToPrevSection(v:count1)<CR>
 nmap <silent> <Plug>MovePrevSibling          :call quicktask#utils#MoveToPrevSibling()<CR>
@@ -250,12 +254,16 @@ nmap <silent> <Plug>MoveBottomSibling        :call quicktask#utils#MoveToLastSib
 
 " Public mappings {{{1
 if ! g:quicktask_no_mappings && ! exists('b:quicktask_did_mappings')
-    nmap <unique><buffer> <Leader>tv  <Plug>SelectTask
+    " Time and task
     nmap <unique><buffer> <Leader>tD  <Plug>TaskComplete
     nmap <unique><buffer> <Leader>ta  <Plug>ShowActiveTasksOnly
     nmap <unique><buffer> <Leader>tw  <Plug>ShowWatchedTasksOnly
     nmap <unique><buffer> <Leader>ty  <Plug>ShowTodayTasksOnly
     nmap <unique><buffer> <Leader>ts  <Plug>AddNextTimeToTask
+    nmap <unique><buffer> <Leader>tt  <Plug>UpdateTaskTimes
+    nmap <unique><buffer> <Leader>tfi <Plug>FindIncompleteTimestamps
+
+    " Editing
     nmap <unique><buffer> <Leader>tO  <Plug>AddTaskAbove
     nmap <unique><buffer> <Leader>to  <Plug>AddTaskBelow
     nmap <unique><buffer> <Leader>tn  <Plug>AddNoteToTask
@@ -265,11 +273,10 @@ if ! g:quicktask_no_mappings && ! exists('b:quicktask_did_mappings')
     nmap <unique><buffer> <Leader>tl  <Plug>IndentTask
     nmap <unique><buffer> <Leader>th  <Plug>OutdentTask
     nmap <unique><buffer> <Leader>tS  <Plug>AddSnipToTask
-    nmap <unique><buffer> <Leader>tt  <Plug>UpdateTaskTimes
-    nmap <unique><buffer> <Leader>tfi <Plug>FindIncompleteTimestamps
     nmap <unique><buffer> <CR>        <Plug>OpenSnipUnderCursor
 
     " Movement maps
+    nmap <unique><buffer> <Leader>tv  <Plug>SelectTask
     nmap <silent><buffer> [s          <Plug>MoveToPrevSection
     nmap <silent><buffer> ]s          <Plug>MoveToNextSection
     nmap <silent><buffer> [[          <Plug>MovePrevTask
