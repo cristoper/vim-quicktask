@@ -241,16 +241,16 @@ nmap <silent> <Plug>OpenSnipUnderCursor      :call quicktask#snip#OpenSnip()<CR>
 " Movement
 map <silent> <Plug>SelectTask               :call quicktask#utils#SelectTask(0)<CR>
 map <silent> <Plug>SelectNoBlanksTask       :call quicktask#utils#SelectTask(1)<CR>
-nmap <silent> <Plug>MoveToNextSection        :call quicktask#utils#MoveToNextSection(v:count1)<CR>
-nmap <silent> <Plug>MoveToPrevSection        :call quicktask#utils#MoveToPrevSection(v:count1)<CR>
-nmap <silent> <Plug>MovePrevSibling          :call quicktask#utils#MoveToPrevSibling()<CR>
-nmap <silent> <Plug>MoveNextSibling          :call quicktask#utils#MoveToNextSibling()<CR>
-nmap <silent> <Plug>MoveToParent             :call quicktask#utils#MoveToParentTask()<CR>
-nmap <silent> <Plug>MoveToChild              :call quicktask#utils#MoveToChildTask()<CR>
-nmap <silent> <Plug>MovePrevTask             :<C-u>call quicktask#utils#MoveToPrevTask(v:count1)<CR>
-nmap <silent> <Plug>MoveNextTask             :<C-u>call quicktask#utils#MoveToNextTask(v:count1)<CR>
-nmap <silent> <Plug>MoveTopSibling           :call quicktask#utils#MoveToFirstSibling()<CR>
-nmap <silent> <Plug>MoveBottomSibling        :call quicktask#utils#MoveToLastSibling()<CR>
+nmap <silent> <Plug>MoveToNextSection        :<C-u>call quicktask#move#MoveToNextSection(v:count1)<CR>
+nmap <silent> <Plug>MoveToPrevSection        :<C-u>call quicktask#move#MoveToPrevSection(v:count1)<CR>
+nmap <silent> <Plug>MovePrevSibling          :call quicktask#move#MoveToPrevSibling()<CR>
+nmap <silent> <Plug>MoveNextSibling          :call quicktask#move#MoveToNextSibling()<CR>
+nmap <silent> <Plug>MoveToParent             :call quicktask#move#MoveToParentTask()<CR>
+nmap <silent> <Plug>MoveToChild              :call quicktask#move#MoveToChildTask()<CR>
+nmap <silent> <Plug>MovePrevTask             :<C-u>call quicktask#move#MoveToPrevTask(v:count1)<CR>
+nmap <silent> <Plug>MoveNextTask             :<C-u>call quicktask#move#MoveToNextTask(v:count1)<CR>
+nmap <silent> <Plug>MoveTopSibling           :call quicktask#move#MoveToFirstSibling()<CR>
+nmap <silent> <Plug>MoveBottomSibling        :call quicktask#move#MoveToLastSibling()<CR>
 
 " Public mappings {{{1
 if ! g:quicktask_no_mappings && ! exists('b:quicktask_did_mappings')

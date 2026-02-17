@@ -22,17 +22,17 @@ function! s:suite.test_move_to_next_section()
   let completed_tasks = search('COMPLETED TASKS:', 'nW')
 
   call cursor(1, 1)
-  call quicktask#utils#MoveToNextSection(1)
+  call quicktask#move#MoveToNextSection(1)
   call s:assert.equals(line('.'), heading1)
   
-  call quicktask#utils#MoveToNextSection(1)
+  call quicktask#move#MoveToNextSection(1)
   call s:assert.equals(line('.'), child_section)
   
-  call quicktask#utils#MoveToNextSection(1)
+  call quicktask#move#MoveToNextSection(1)
   call s:assert.equals(line('.'), completed_tasks)
 
   " Try to move beyond last section
-  call quicktask#utils#MoveToNextSection(1)
+  call quicktask#move#MoveToNextSection(1)
   call s:assert.equals(line('.'), completed_tasks) 
 endfunction
 
@@ -42,17 +42,17 @@ function! s:suite.test_move_to_prev_section()
   let completed_tasks = search('COMPLETED TASKS:', 'nW')
 
   call cursor('$', 1)
-  call quicktask#utils#MoveToPrevSection(1)
+  call quicktask#move#MoveToPrevSection(1)
   call s:assert.equals(line('.'), completed_tasks)
   
-  call quicktask#utils#MoveToPrevSection(1)
+  call quicktask#move#MoveToPrevSection(1)
   call s:assert.equals(line('.'), child_section)
   
-  call quicktask#utils#MoveToPrevSection(1)
+  call quicktask#move#MoveToPrevSection(1)
   call s:assert.equals(line('.'), heading1)
   
   " Try to move beyond first section
-  call quicktask#utils#MoveToPrevSection(1)
+  call quicktask#move#MoveToPrevSection(1)
   call s:assert.equals(line('.'), heading1)
 endfunction
 
@@ -62,12 +62,12 @@ function! s:suite.test_move_to_next_task()
   call cursor(1,1)
 
   for line in s:task_lines
-    call quicktask#utils#MoveToNextTask(1)
+    call quicktask#move#MoveToNextTask(1)
     call s:assert.equals(line('.'), line)
   endfor
   
   " Try to move beyond last task
-  call quicktask#utils#MoveToNextTask(1)
+  call quicktask#move#MoveToNextTask(1)
   call s:assert.equals(line('.'), 28) " Should stay at last section
 endfunction
 
@@ -79,7 +79,7 @@ function! s:suite.test_move_to_prev_task()
   let task_lines = reverse(task_lines)
   
   for line in task_lines
-    call quicktask#utils#MoveToPrevTask(1)
+    call quicktask#move#MoveToPrevTask(1)
     call s:assert.equals(line('.'), line)
   endfor
 endfunction
@@ -87,64 +87,64 @@ endfunction
 function! s:suite.test_move_to_first_sibling()
   " Move to a child task (line 7)
   call cursor(12, 1)
-  call quicktask#utils#MoveToFirstSibling()
+  call quicktask#move#MoveToFirstSibling()
   call s:assert.equals(line('.'), 5) " Should move to first sibling (child task)
   
   " Calling again should not move
-  call quicktask#utils#MoveToFirstSibling()
+  call quicktask#move#MoveToFirstSibling()
   call s:assert.equals(line('.'), 5) " Should stay at same line
 endfunction
 
 function! s:suite.test_move_to_last_sibling()
   " Move to a child task (line 7)
   call cursor(12, 1)
-  call quicktask#utils#MoveToLastSibling()
+  call quicktask#move#MoveToLastSibling()
   call s:assert.equals(line('.'), 25)
   
   " Calling again should not move
-  call quicktask#utils#MoveToLastSibling()
+  call quicktask#move#MoveToLastSibling()
   call s:assert.equals(line('.'), 25) " Should stay at same line
 endfunction
 
 function! s:suite.test_move_to_prev_sibling()
   " Move to child task (line 7)
   call cursor(12, 1)
-  call quicktask#utils#MoveToPrevSibling()
+  call quicktask#move#MoveToPrevSibling()
   call s:assert.equals(line('.'), 5)
   
   " Calling again should move to parent
-  call quicktask#utils#MoveToPrevSibling()
+  call quicktask#move#MoveToPrevSibling()
   call s:assert.equals(line('.'), 3)
 endfunction
 
 function! s:suite.test_move_to_next_sibling()
   call cursor(12, 1)
-  call quicktask#utils#MoveToNextSibling()
+  call quicktask#move#MoveToNextSibling()
   call s:assert.equals(line('.'), 25)
   
   " Try to move next when no next sibling exists
-  call quicktask#utils#MoveToNextSibling()
+  call quicktask#move#MoveToNextSibling()
   call s:assert.equals(line('.'), 25) " Should move to child task
 endfunction
 
 function! s:suite.test_move_to_parent_task()
   call cursor(16, 1)  "Child Section:"
-  call quicktask#utils#MoveToParentTask()
+  call quicktask#move#MoveToParentTask()
   call s:assert.equals(line('.'), 11)
   
   " Try to move to parent when no parent exists
   call cursor(3, 1)
-  call quicktask#utils#MoveToParentTask()
+  call quicktask#move#MoveToParentTask()
   call s:assert.equals(line('.'), 3) " Should stay at same line
 endfunction
 
 function! s:suite.test_move_to_child_task()
   call cursor(16, 1)
-  call quicktask#utils#MoveToChildTask()
+  call quicktask#move#MoveToChildTask()
   call s:assert.equals(line('.'), 17) " Should move to first child
   
   " Try to move to child when no children exist
-  call quicktask#utils#MoveToChildTask()
+  call quicktask#move#MoveToChildTask()
   call s:assert.equals(line('.'), 17) " Should stay at same line
 endfunction
 
