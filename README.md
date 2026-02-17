@@ -49,6 +49,13 @@ something like:
 
 Once help tags have been generated, you can simply run `:h quicktask` to open the full manual.
 
+# Contribute
+
+If you'd like to improve Quicktask, note that there are some tests in the
+`test/` directory. They use the themis test runner
+(https://github.com/thinca/vim-themis) and can be run with `make` assuming the
+`themis` binary is in your PATH.
+
 # License
 
 Quicktask is free software: you can redistribute it and/or modify it under the
