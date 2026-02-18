@@ -204,7 +204,9 @@ function! quicktask#utils#FindPrevSibling() abort
         let boundary_line = 1
     endif
 
-    return search('^\s\{'.indent.'}[^\t \@#]', 'bnW', boundary_line)
+    let sibling_section = search('^\s\{'.indent.'}\S.*:\s*$', 'bnW', boundary_line)
+    let sibling_task = search('^\s\{'.indent.'}- \S', 'bnW', boundary_line)
+    return max([sibling_section, sibling_task])
 endfunction
 
 " ============================================================================
