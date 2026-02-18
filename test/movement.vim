@@ -11,7 +11,7 @@ let s:task_lines = [3,5,11,16,17,21,25,28]
 function! s:suite.before_each()
   enew! " Create a new empty buffer
   setlocal filetype=quicktask
-  setlocal foldlevel=99
+  setlocal nofoldenable
   call setline(1, readfile(s:test_file))
 endfunction
 
@@ -109,42 +109,42 @@ endfunction
 function! s:suite.test_move_to_prev_sibling()
   " Move to child task (line 7)
   call cursor(12, 1)
-  call quicktask#move#MoveToPrevSibling()
+  call quicktask#move#MoveToPrevSibling(1)
   call s:assert.equals(line('.'), 5)
   
   " Calling again should move to parent
-  call quicktask#move#MoveToPrevSibling()
+  call quicktask#move#MoveToPrevSibling(1)
   call s:assert.equals(line('.'), 3)
 endfunction
 
 function! s:suite.test_move_to_next_sibling()
   call cursor(12, 1)
-  call quicktask#move#MoveToNextSibling()
+  call quicktask#move#MoveToNextSibling(1)
   call s:assert.equals(line('.'), 25)
   
   " Try to move next when no next sibling exists
-  call quicktask#move#MoveToNextSibling()
+  call quicktask#move#MoveToNextSibling(1)
   call s:assert.equals(line('.'), 25) " Should move to child task
 endfunction
 
 function! s:suite.test_move_to_parent_task()
   call cursor(16, 1)  "Child Section:"
-  call quicktask#move#MoveToParentTask()
+  call quicktask#move#MoveToParentTask(1)
   call s:assert.equals(line('.'), 11)
   
   " Try to move to parent when no parent exists
   call cursor(3, 1)
-  call quicktask#move#MoveToParentTask()
+  call quicktask#move#MoveToParentTask(1)
   call s:assert.equals(line('.'), 3) " Should stay at same line
 endfunction
 
 function! s:suite.test_move_to_child_task()
   call cursor(16, 1)
-  call quicktask#move#MoveToChildTask()
+  call quicktask#move#MoveToChildTask(1)
   call s:assert.equals(line('.'), 17) " Should move to first child
   
   " Try to move to child when no children exist
-  call quicktask#move#MoveToChildTask()
+  call quicktask#move#MoveToChildTask(1)
   call s:assert.equals(line('.'), 17) " Should stay at same line
 endfunction
 
@@ -263,4 +263,89 @@ function! s:suite.test_move_to_prev_sibling_map()
    call s:assert.equals(line('.'), 3)
    execute "normal \<C-k>"
    call s:assert.equals(line('.'), 3)
+endfunction
+
+function! s:suite.test_move_to_next_task_count()
+    call cursor(3,1)
+    execute "normal 3]]"
+    call s:assert.equals(line('.'), 16)
+
+    " big number should stop at last task
+    execute "normal 100]]"
+    call s:assert.equals(line('.'), 28)
+endfunction
+
+function! s:suite.test_move_to_prev_task_count()
+    call cursor(21,1)
+    execute "normal 3[["
+    call s:assert.equals(line('.'), 11)
+
+    " big number should stop at first task
+    execute "normal 100[["
+    call s:assert.equals(line('.'), 3)
+endfunction
+
+function! s:suite.test_move_to_next_sibling_count()
+    " Start on "Child Section" then 2<C-j> should end on "- Another task"
+    call cursor(16,1)
+    execute "normal 2\<C-j>"
+    call s:assert.equals(line('.'), 21)
+
+    " no more siblings or children
+    execute "normal 2\<C-j>"
+    call s:assert.equals(line('.'), 21)
+endfunction
+
+function! s:suite.test_move_to_prev_sibling_count()
+    " Start on "- Another task" then 2<C-k> should end on "Child Section"
+    call cursor(21,1)
+    execute "normal 3\<C-k>"
+    call s:assert.equals(line('.'), 11)
+
+    " big count should end on first parent
+    execute "normal 100\<C-k>"
+    call s:assert.equals(line('.'), 3) " Should end on first parent
+endfunction
+
+function! s:suite.test_move_to_parent_task_count()
+    " Start on "- Another Task" then 2<C-h> should end on "Heading 1"
+    call cursor(21,1)
+    execute "normal 3\<C-h>"
+    call s:assert.equals(line('.'), 3)
+
+    " No more parents
+    execute "normal 2\<C-h>"
+    call s:assert.equals(line('.'), 3) " Should stay at same line
+endfunction
+
+function! s:suite.test_move_to_child_task_count()
+    call cursor(12,1)
+    execute "normal 2\<C-l>"
+    call s:assert.equals(line('.'), 17)
+
+    " more times should not change since no more children
+    execute "normal 2\<C-l>"
+    call s:assert.equals(line('.'), 17)
+endfunction
+
+function! s:suite.test_move_to_prev_sibling_blank()
+    " start on blank line should still move up to prev task
+    call cursor(30,0)
+    execute "normal \<C-k>"
+    call s:assert.equals(line('.'), 28)
+
+    call cursor(29,0)
+    execute "normal \<C-k>"
+    call s:assert.equals(line('.'), 28)
+endfunction
+
+function! s:suite.test_move_to_next_sibling_blank()
+    " start on blank line should still move down to next task
+    call cursor(1,0)
+    execute "normal \<C-j>"
+    call s:assert.equals(line('.'), 3)
+
+    call cursor(2,0)
+    execute "normal \<C-j>"
+    call s:assert.equals(line('.'), 3)
 endfunction

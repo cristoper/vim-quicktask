@@ -243,10 +243,10 @@ map <silent> <Plug>SelectTask               :call quicktask#utils#SelectTask(0)<
 map <silent> <Plug>SelectNoBlanksTask       :call quicktask#utils#SelectTask(1)<CR>
 nmap <silent> <Plug>MoveToNextSection        :<C-u>call quicktask#move#MoveToNextSection(v:count1)<CR>
 nmap <silent> <Plug>MoveToPrevSection        :<C-u>call quicktask#move#MoveToPrevSection(v:count1)<CR>
-nmap <silent> <Plug>MovePrevSibling          :call quicktask#move#MoveToPrevSibling()<CR>
-nmap <silent> <Plug>MoveNextSibling          :call quicktask#move#MoveToNextSibling()<CR>
-nmap <silent> <Plug>MoveToParent             :call quicktask#move#MoveToParentTask()<CR>
-nmap <silent> <Plug>MoveToChild              :call quicktask#move#MoveToChildTask()<CR>
+nmap <silent> <Plug>MovePrevSibling          :<C-u>call quicktask#move#MoveToPrevSibling(v:count1)<CR>
+nmap <silent> <Plug>MoveNextSibling          :<C-u>call quicktask#move#MoveToNextSibling(v:count1)<CR>
+nmap <silent> <Plug>MoveToParent             :<C-u>call quicktask#move#MoveToParentTask(v:count1)<CR>
+nmap <silent> <Plug>MoveToChild              :<C-u>call quicktask#move#MoveToChildTask(v:count1)<CR>
 nmap <silent> <Plug>MovePrevTask             :<C-u>call quicktask#move#MoveToPrevTask(v:count1)<CR>
 nmap <silent> <Plug>MoveNextTask             :<C-u>call quicktask#move#MoveToNextTask(v:count1)<CR>
 nmap <silent> <Plug>MoveTopSibling           :call quicktask#move#MoveToFirstSibling()<CR>

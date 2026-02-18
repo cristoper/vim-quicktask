@@ -5,50 +5,80 @@ let s:section_regex = '\v^\s*[^-].*:\s*$'
 " MovePrevSibling(): Move to the previous sibling task. {{{1
 "
 " If task has no previous sibling, then move to parent.
-function! quicktask#move#MoveToPrevSibling() abort
-    let prev_sibling = quicktask#utils#FindPrevSibling()
-    if prev_sibling == 0
-        call quicktask#move#MoveToParentTask()
-        return
-    endif
-    call cursor(prev_sibling, 0)
+function! quicktask#move#MoveToPrevSibling(count) abort
+    for _ in range(a:count)
+        let prev_sibling = quicktask#utils#FindPrevSibling()
+        if prev_sibling == 0
+            let parent = quicktask#utils#FindTaskParent()
+            if parent == 0
+                " no sibling or parent, we're done
+                call quicktask#utils#EchoWarning("No previous sibling or parent task found")
+                return
+            else
+                call cursor(parent, 0)
+            endif
+        else
+            call cursor(prev_sibling, 0)
+        endif
+    endfor
 endfunction
 
 " ============================================================================
 " MoveNextSibling(): Move to the next sibling task. {{{1
 "
 " If task has no next sibling, move to next child if any
-function! quicktask#move#MoveToNextSibling() abort
-    let next_sibling = quicktask#utils#FindNextSibling()
-    if next_sibling == 0
-        call quicktask#move#MoveToChildTask()
-        return
-    endif
-    call cursor(next_sibling, 0)
+function! quicktask#move#MoveToNextSibling(count) abort
+    for _ in range(a:count)
+        let next_sibling = quicktask#utils#FindNextSibling()
+        if next_sibling == 0
+            " parse task to check if it has children
+            let task = quicktask#utils#FindTaskStart(1)
+            if task == 0
+                return
+            endif
+            let node = quicktask#parse#QTParseTask(task)
+            if !empty(node.children)
+                let first_child_line = node.children[0].line
+                call cursor(first_child_line, 0)
+            else
+                call quicktask#utils#EchoWarning("No next sibling or child task found")
+                return
+            endif
+        else
+            call cursor(next_sibling, 0)
+        endif
+    endfor
 endfunction
 
 " ============================================================================
 " MoveToParent(): Move to the parent task. {{{1
-function! quicktask#move#MoveToParentTask() abort
-    let parent_line = quicktask#utils#FindTaskParent()
-    if parent_line == 0
-        call quicktask#utils#EchoWarning("No parent task found")
-        return
-    endif
-    call cursor(parent_line, 0)
+function! quicktask#move#MoveToParentTask(count) abort
+    let more = v:true
+    for _ in range(a:count)
+        let parent_line = quicktask#utils#FindTaskParent()
+        if parent_line != 0
+            call cursor(parent_line, 0)
+        else
+            call quicktask#utils#EchoWarning("No parent task found")
+            return
+        endif
+    endfor
 endfunction
 
 " ============================================================================
 " MoveToChild(): Move to the first child task. {{{1
-function! quicktask#move#MoveToChildTask() abort
-    let task_start = quicktask#utils#FindTaskStart(0)
-    let task = quicktask#parse#QTParseTask(task_start)
-    if !empty(task.children)
-        let first_child_line = task.children[0].line
-        call cursor(first_child_line, 0)
+function! quicktask#move#MoveToChildTask(count) abort
+    for _ in range(a:count)
+        let task_start = quicktask#utils#FindTaskStart(0)
+        let task = quicktask#parse#QTParseTask(task_start)
+        if !empty(task.children)
+            let first_child_line = task.children[0].line
+            call cursor(first_child_line, 0)
+            continue
+        endif
+        call quicktask#utils#EchoWarning("No child task found")
         return
-    endif
-    call quicktask#utils#EchoWarning("No child task found")
+    endfor
 endfunction
 
 " ===========================================================================
@@ -57,7 +87,7 @@ endfunction
      " If we're on a blank or comment line, move directly to the task above us
      " in the buffer
      let cur_line = getline('.')
-     if cur_line =~ '^[#$]'
+     if cur_line =~ '^$\|^#'
          call search(s:task_or_section_regex, 'bW')
          return
      endif
