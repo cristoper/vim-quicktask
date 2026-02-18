@@ -6,10 +6,10 @@ let s:assert = themis#helper('assert')
 function! s:suite.before_each()
   " disable @ Added just to make it easier to assert matches without
   " considering date
-  setlocal foldlevel=99
   let g:quicktask_task_insert_added = 0
   enew! " Create a new empty buffer
   setlocal filetype=quicktask
+  setlocal nofoldenable
   call setline(1, [
         \ 'CURRENT TASKS:',
         \ '  - My first task.',
@@ -139,6 +139,40 @@ function! s:suite.test_outdent_task()
   call s:assert.match(line_content, '^- Second task$')
   let line_content = getline(6)
   call s:assert.match(line_content, '^  @ Added \[Fri 2026-02-13\]$')
+endfunction
+
+function! s:suite.test_move_task_down()
+    call cursor(2, 1)
+    call quicktask#utils#MoveTaskDown()
+
+    " Expect
+    let expected = [
+        \ 'CURRENT TASKS:',
+        \ '  - Second task',
+        \ '    @ Added [Fri 2026-02-13]',
+        \ '    @ Start [Fri 2026-02-13] [15:32], end [16:33]',
+        \ '  - My first task.',
+        \ '    @ Added [Fri 2026-02-13]',
+        \ ''
+        \ ]
+    call s:assert.equals(getline(1, '$'), expected)
+endfunction
+
+function! s:suite.test_move_task_up()
+    call cursor(6, 1)
+    call quicktask#utils#MoveTaskUp()
+
+    " Expect
+    let expected = [
+        \ 'CURRENT TASKS:',
+        \ '  - Second task',
+        \ '    @ Added [Fri 2026-02-13]',
+        \ '    @ Start [Fri 2026-02-13] [15:32], end [16:33]',
+        \ '  - My first task.',
+        \ '    @ Added [Fri 2026-02-13]',
+        \ ''
+        \ ]
+    call s:assert.equals(getline(1, '$'), expected)
 endfunction
 
 function! s:suite.test_update_task_times()
