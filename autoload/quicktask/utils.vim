@@ -151,7 +151,7 @@ function! quicktask#utils#FindNextSibling() abort
     " If we are on a blank line or top-level comment (#), just find the next
     " task in buffer
     let cur_line = getline('.')
-    if cur_line =~ '^[#$]'
+    if cur_line =~ '^$\|^#'
         return search(s:task_or_section_regex, 'nW')
     endif
 
@@ -187,7 +187,7 @@ function! quicktask#utils#FindPrevSibling() abort
     " If we are on a blank line or top-level comment (#), just move to the
     " first task above us in the buffer
     let cur_line = getline('.')
-    if cur_line =~ '^[#$]'
+    if cur_line =~ '^$\|^#'
         return search(s:task_or_section_regex, 'nbW')
     endif
 
