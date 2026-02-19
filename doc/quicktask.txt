@@ -176,27 +176,32 @@ mappings are configurable and that configuration is covered in
                 the current task and the file is opened for editing. For more
                 information on snips, see |quicktask-snips|.
 
-<Leader>ts      Add start or end time stamps to the current task (mnemonic:
-                "timestamp", "task start", or "time start"). A new time
-                annotation will be added to the current task with today's date
-                and a timestamp reading "Start." If there is already an
-                annotation with a start time, an end time will be added to it.
-                If there is already a complete start and end item, a new one
-                will be added. By pressing <Leader>ts repeatedly, you can log
-                the start and stop progress of a task. See |quicktask-time|.
+<Leader>ts      Clock ask in or out: adds start or end time stamps to the
+                current task (mnemonic: "timestamp", "task start", or "time
+                start"). A new time annotation will be added to the current
+                task with today's date and a timestamp reading "Start." If
+                there is already an annotation with a start time, an end time
+                will be added to it. If there is already a complete start and
+                end item, a new one will be added. By pressing <Leader>ts
+                repeatedly, you can log the start and stop progress of a task.
+                See |quicktask-time|.
 
 <Leader>tu      Move the current task up (mnemonic: "task up"). Tasks can only
                 be moved up and down among sibling tasks, so they will not
-                move between sections (projects).
+                move between sections (projects). In visual mode, act on all
+                (partially) selected tasks.
 
 <Leader>td      Move the current task down (mnemonic: "task down"). Tasks can
                 only be moved up and down among sibling tasks, so they will
-                not move between sections (projects).
+                not move between sections (projects). In visual mode, act on
+                all (partially) selected tasks.
 
-<Leader>tl      Indent the current task. Tasks can only be indented if they
-                have a sibling above them.
+<Leader>tl      Promote (indent) the current task. Tasks can only be indented
+                if they have a sibling above them. In visual mode, act on all
+                (partially) selected tasks.
 
-<Leader>th      Outdent the current task (move it to the left).
+<Leader>th      Demote (outdent) the current task. In visual mode, act on all
+                (partially) selected tasks.
 
 <Leader>tD      Mark a task as "done." This adds a new "note" line at the end
                 of the task with the "DONE" keyword and a timestamp. It is
@@ -232,12 +237,18 @@ mappings are configurable and that configuration is covered in
 <Leader>tt      Update all "@ Time" lines with total time spent on task and
                 all of its sub-tasks.
 
-4.1.1 Operator Pending Mappings                *quicktask-operator-pending-mappings*
 
-These mappings allow using tasks/sections as the objects of motion |operator|s
-in normal or visual mode. Hint for moving tasks around: use motions with these
-opeartors to yank/cut tasks and then |[p| and |[P| (paste at current
-indentation) to paste them into your task tree. 
+4.1.1 Visual and Operator Pending Mappings   *quicktask-operator-pending-mappings*
+
+In visual mode, the mappings to move tasks up/down (`<Leader>tu`/`<Leader>td`)
+and promote/demote (`<Leader>tl`/`<Leader>th`) are extended to work on all
+selected tasks.
+
+In addition to visual mode to select tasks, Quicktask supports the following
+operator pending objects which allow using tasks/sections as the objects of
+motion |operator|s in normal or visual mode. Hint for moving tasks around: use
+motions with these opeartors to yank/cut tasks and then |[p| and |[P| (paste
+at current indentation) to paste them into your task tree. 
 
 at              Act on the current task and its children including blank lines
                 (mnemonic: "around task" or "a task"). For example: dat

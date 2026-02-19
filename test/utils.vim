@@ -192,3 +192,66 @@ function! s:suite.test_update_task_times()
         \ ]
   call s:assert.equals(getline(1, '$'), expected)
 endfunction
+
+function! s:suite.test_move_all_down()
+    " select parent and first task
+    silent normal 2ggV2j\td
+
+    let expected = [
+        \ 'CURRENT TASKS:',
+        \ '  - Second task',
+        \ '    @ Added [Fri 2026-02-13]',
+        \ '    @ Start [Fri 2026-02-13] [15:32], end [16:33]',
+        \ '  - My first task.',
+        \ '    @ Added [Fri 2026-02-13]',
+        \ ''
+        \ ]
+    call s:assert.equals(getline(1, '$'), expected)
+endfunction
+
+function! s:suite.test_move_all_up()
+    " select first and second task
+    normal 2ggV4j\tu
+
+    let expected = [
+        \ 'CURRENT TASKS:',
+        \ '  - Second task',
+        \ '    @ Added [Fri 2026-02-13]',
+        \ '    @ Start [Fri 2026-02-13] [15:32], end [16:33]',
+        \ '  - My first task.',
+        \ '    @ Added [Fri 2026-02-13]',
+        \ ''
+        \ ]
+    call s:assert.equals(getline(1, '$'), expected)
+endfunction
+
+function! s:suite.test_outdent_indent_all()
+    normal 2ggVG\th
+
+    let expected = [
+        \ 'CURRENT TASKS:',
+        \ '- My first task.',
+        \ '  @ Added [Fri 2026-02-13]',
+        \ '',
+        \ '- Second task',
+        \ '  @ Added [Fri 2026-02-13]',
+        \ '  @ Start [Fri 2026-02-13] [15:32], end [16:33]'
+        \ ]
+
+    call s:assert.equals(getline(1, '$'), expected)
+
+    " now re-indent all
+    normal ggVG\tl
+
+    let expected = [
+        \ 'CURRENT TASKS:',
+        \ '  - My first task.',
+        \ '    @ Added [Fri 2026-02-13]',
+        \ '',
+        \ '  - Second task',
+        \ '    @ Added [Fri 2026-02-13]',
+        \ '    @ Start [Fri 2026-02-13] [15:32], end [16:33]'
+        \ ]
+
+    call s:assert.equals(getline(1, '$'), expected)
+endfunction

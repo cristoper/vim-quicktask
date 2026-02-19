@@ -765,7 +765,101 @@ function! quicktask#utils#FindIncompleteTimestamps()
 endfunction
 
 " ============================================================================
-" TopLevelTasks(): Return line number of each top-level task in buffer. {{{1
+" TopLevelTasks(): Return line number of each topmost-level task in range. {{{1
+"
+" This function returns line numbers of tasks suitable for acting on in visual
+" selection mode. To act on all topmost-level tasks in the buffer (such as
+" when exporting entire buffer, for example, pass 1 and line("$") for the
+" first and last lines.
+"
+" Returns a list of line numbers in reverse order (highest line number first),
+" so that acting on tasks in returned order will not affect line number of next
+" task in buffer.
+"
+" Only the line numbers of the topmost (least indented) tasks in the selection
+" are returned. However, be aware tat if the range includes tasks at a higher
+" indentation level first followed by tasks at a lower/parent indentation
+" level at the end, TopLevelTasks() will return line numbers for both the
+" earlier indented tasks and the later parent-level tasks. This is intended
+" behavior.
+"
+" first: the first line of the range. If this includes a partial task, it will
+"        be expanded upward to include the start of the task
+" last:  the last line of the range
 function! quicktask#utils#TopLevelTasks(first, last)
-     return filter(range(a:last, a:first, -1), 'getline(v:val) =~ "^[^\\t #]"')
+    " expand range to include start of task
+    call cursor(a:first, 1)
+    let first = quicktask#utils#FindTaskStart(v:true)
+    if first == 0
+        let first = quicktask#utils#FindNextTask()
+        if first == 0
+            call quicktask#utils#EchoWarning("No task found in range")
+            return 0
+        endif
+        call cursor(first, 1)
+    endif
+
+    " move through tasks until we get to end of range
+    let tasks = [first]
+    let curline = first
+    let indent = quicktask#utils#GetTaskIndent()
+    while v:true
+        let curline = quicktask#move#MoveToNextSiblingOrTask(1)
+        if curline == 0 || curline > a:last
+            break
+        endif
+        let curindent = quicktask#utils#GetAnyIndent(curline)
+        if indent < curindent
+            " don't include children tasks
+            continue
+        endif
+        let tasks += [curline]
+    endwhile
+
+    return reverse(tasks)
+ endfunction
+
+ " ===========================================================================
+ " ActOnRange(): Act on all top-level tasks in range. {{{1
+ "
+ " For each top-level task in range, move to task line and run
+ " `action_func()`. 
+ "
+ " This is used by the visual mode mappings  to act on all top-level tasks in a range.
+ " bottom_first: if true, act on tasks from bottom to top, otherwise from top to bottom 
+ " action_func: function to call for each task
+ function! quicktask#utils#ActOnRange(first, last, action_func, bottom_first)
+     let tasks = quicktask#utils#TopLevelTasks(a:first, a:last)
+
+     if empty(tasks)
+         return
+     endif
+
+     if !a:bottom_first
+         let tasks = reverse(tasks)
+     endif
+
+     for taskline in tasks
+         call cursor(taskline, 1)
+         call a:action_func()
+     endfor
+
+     " return to original cursor position
+     call cursor(a:firstline, 1) 
+ endfunction
+
+ function! quicktask#utils#MoveAllUp() range
+     call quicktask#utils#ActOnRange(a:firstline, a:lastline, function("quicktask#utils#MoveTaskUp"), v:false)
+ endfunction
+
+ function! quicktask#utils#MoveAllDown() range
+     call quicktask#utils#ActOnRange(a:firstline, a:lastline, function("quicktask#utils#MoveTaskDown"), v:true)
+ endfunction
+
+ function! quicktask#utils#IndentAll() range
+     call quicktask#utils#ActOnRange(a:firstline, a:lastline, function("quicktask#utils#IndentTask"), v:false)
+ endfunction
+
+ function! quicktask#utils#OutdentAll() range
+     call quicktask#utils#ActOnRange(a:firstline, a:lastline, function("quicktask#utils#OutdentTask"), v:true)
  endfunction

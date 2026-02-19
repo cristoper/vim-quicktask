@@ -238,6 +238,12 @@ nmap <silent> <Plug>OutdentTask              :call quicktask#utils#OutdentTask()
 nmap <silent> <Plug>AddSnipToTask            :call quicktask#snip#AddSnipToTask()<CR>
 nmap <silent> <Plug>OpenSnipUnderCursor      :call quicktask#snip#OpenSnip()<CR>
 
+" Visual editing
+vmap <silent> <Plug>MoveAllUp                :call quicktask#utils#MoveAllUp()<CR>
+vmap <silent> <Plug>MoveAllDown              :call quicktask#utils#MoveAllDown()<CR>
+vmap <silent> <Plug>IndentAll                :call quicktask#utils#IndentAll()<CR>
+vmap <silent> <Plug>OutdentAll               :call quicktask#utils#OutdentAll()<CR>
+
 " Movement
 map <silent> <Plug>SelectTask               :call quicktask#utils#SelectTask(0)<CR>
 map <silent> <Plug>SelectNoBlanksTask       :call quicktask#utils#SelectTask(1)<CR>
@@ -276,6 +282,12 @@ if ! g:quicktask_no_mappings && ! exists('b:quicktask_did_mappings')
     nmap <unique><buffer> <Leader>th  <Plug>OutdentTask
     nmap <unique><buffer> <Leader>tS  <Plug>AddSnipToTask
     nmap <unique><buffer> <CR>        <Plug>OpenSnipUnderCursor
+
+    " Visual editing
+    vmap <unique><buffer> <Leader>tu  <Plug>MoveAllUp
+    vmap <unique><buffer> <Leader>td  <Plug>MoveAllDown
+    vmap <unique><buffer> <Leader>tl  <Plug>IndentAll
+    vmap <unique><buffer> <Leader>th  <Plug>OutdentAll
 
     " Movement maps
     nmap <unique><buffer> <Leader>tv  <Plug>SelectTask
