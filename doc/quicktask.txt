@@ -252,26 +252,26 @@ it              Act on the current task but only up to and not including any
 
 These mappings allow rapidly navigating a Quicktask buffer as an outline.
 
-[s              Move to the previous section heading [count] times.
+[s             Move to the previous section heading [count] times.
 
-]s              Move to the next section heading [count] times.
+]s             Move to the next section heading [count] times.
 
-[[              Move to the previous task or section regardless of indentation
-                [count] times
+[[             Move to the previous task or section regardless of indentation
+               [count] times
 
-]]              Move to the next task or section regardless of indentation
-                [count] times.
+]]             Move to the next task or section regardless of indentation
+               [count] times.
 
-[t              Move to the first sibling of the current task.
+[t             Move to the first sibling of the current task.
 
-]t              Move to the last sibling of the current task.
+]t             Move to the last sibling of the current task.
 
 <C-k>          Move to the previous sibling task [count] times. If no previous
-               sibling exists, move to the immediate parent. This allows
-               moving up the task tree.
+               sibling exists, move to the previous task at any level. This
+               allows quickly moving up the task tree.
 
 <C-j>          Move to the next sibling task [count] times. If no next sibling
-               exists, move to the first child task (if any). This allows
+               exists, move to the next task at any level. This allows quickly
                moving down the task tree.
 
 <C-h>          Move to the parent task [count] times.

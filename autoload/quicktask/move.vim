@@ -4,50 +4,73 @@ let s:section_regex = '\v^\s*[^-].*:\s*$'
 " ============================================================================
 " MovePrevSibling(): Move to the previous sibling task. {{{1
 "
-" If task has no previous sibling, then move to parent.
+" Returns 0 if no previous sibling is found
 function! quicktask#move#MoveToPrevSibling(count) abort
     for _ in range(a:count)
         let prev_sibling = quicktask#utils#FindPrevSibling()
         if prev_sibling == 0
-            let parent = quicktask#utils#FindTaskParent()
-            if parent == 0
-                " no sibling or parent, we're done
-                call quicktask#utils#EchoWarning("No previous sibling or parent task found")
-                return
-            else
-                call cursor(parent, 0)
-            endif
-        else
-            call cursor(prev_sibling, 0)
+            call quicktask#utils#EchoWarning("No previous sibling task found")
+            break
         endif
+        call cursor(prev_sibling, 0)
     endfor
+    return prev_sibling
 endfunction
 
 " ============================================================================
 " MoveNextSibling(): Move to the next sibling task. {{{1
 "
-" If task has no next sibling, move to next child if any
+" Returns 0 if no next sibling is found
 function! quicktask#move#MoveToNextSibling(count) abort
     for _ in range(a:count)
         let next_sibling = quicktask#utils#FindNextSibling()
         if next_sibling == 0
-            " parse task to check if it has children
-            let task = quicktask#utils#FindTaskStart(1)
-            if task == 0
-                return
-            endif
-            let node = quicktask#parse#QTParseTask(task)
-            if !empty(node.children)
-                let first_child_line = node.children[0].line
-                call cursor(first_child_line, 0)
-            else
-                call quicktask#utils#EchoWarning("No next sibling or child task found")
-                return
-            endif
-        else
-            call cursor(next_sibling, 0)
+            call quicktask#utils#EchoWarning("No next sibling task found")
+            break
         endif
+        call cursor(next_sibling, 0)
     endfor
+    return next_sibling
+endfunction
+
+" ============================================================================
+" MovePrevSiblingOrTask(): Move to the previous sibling task. {{{1
+"
+" If task has no previous sibling, then move to previous task at any level
+function! quicktask#move#MoveToPrevSiblingOrTask(count) abort
+    for _ in range(a:count)
+        let prev_sibling = quicktask#utils#FindPrevSibling()
+        if prev_sibling == 0
+            let prev_sibling = quicktask#utils#FindPrevTask()
+        endif
+        if prev_sibling == 0
+            " no previous sibling OR task
+            call quicktask#utils#EchoWarning("No previous sibling or task found") 
+            break
+        endif
+        call cursor(prev_sibling, 0)
+    endfor
+    return prev_sibling
+endfunction
+
+" ============================================================================
+" MoveNextSiblingOrTask(): Move to the next sibling task. {{{1
+"
+" If task has no next sibling, move to next task at any level
+function! quicktask#move#MoveToNextSiblingOrTask(count) abort
+    for _ in range(a:count)
+        let next_sibling = quicktask#utils#FindNextSibling()
+        if next_sibling == 0
+            let next_sibling = quicktask#utils#FindNextTask()
+        endif
+        if next_sibling == 0
+            " no previous sibling OR task
+            call quicktask#utils#EchoWarning("No next sibling or task found") 
+            break
+        endif
+        call cursor(next_sibling, 0)
+    endfor
+    return next_sibling
 endfunction
 
 " ============================================================================

@@ -100,7 +100,7 @@ function! quicktask#time#UpdateAllTaskTimes() abort
     " Get top-level tasks/sections
     " Notice "-1" third argument to range(): we must iterate backwards or add
     " '@ Time' lines will change line numbers of next top-level tasks
-    let top_level_tasks = quicktask#utils#TopLevelTasks()
+    let top_level_tasks = quicktask#utils#TopLevelTasks(1, line('$'))
     for task in top_level_tasks
         call quicktask#time#UpdateTaskTime(task)
     endfor

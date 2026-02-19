@@ -112,9 +112,9 @@ function! s:suite.test_move_to_prev_sibling()
   call quicktask#move#MoveToPrevSibling(1)
   call s:assert.equals(line('.'), 5)
   
-  " Calling again should move to parent
+  " Calling again should not move to parent
   call quicktask#move#MoveToPrevSibling(1)
-  call s:assert.equals(line('.'), 3)
+  call s:assert.equals(line('.'), 5)
 endfunction
 
 function! s:suite.test_move_to_next_sibling()
@@ -122,9 +122,30 @@ function! s:suite.test_move_to_next_sibling()
   call quicktask#move#MoveToNextSibling(1)
   call s:assert.equals(line('.'), 25)
   
-  " Try to move next when no next sibling exists
+  " Try to move next on last sibling should not move
   call quicktask#move#MoveToNextSibling(1)
-  call s:assert.equals(line('.'), 25) " Should move to child task
+  call s:assert.equals(line('.'), 25)
+endfunction
+
+function! s:suite.test_move_to_prev_sibling_or_task()
+  " Move to child task (line 7)
+  call cursor(12, 1)
+  call quicktask#move#MoveToPrevSiblingOrTask(1)
+  call s:assert.equals(line('.'), 5)
+  
+  " Calling again should move to parent
+  call quicktask#move#MoveToPrevSiblingOrTask(1)
+  call s:assert.equals(line('.'), 3)
+endfunction
+
+function! s:suite.test_move_to_next_sibling_or_task()
+  call cursor(12, 1)
+  call quicktask#move#MoveToNextSiblingOrTask(1)
+  call s:assert.equals(line('.'), 25)
+  
+  " Try to move next when no next sibling exists
+  call quicktask#move#MoveToNextSiblingOrTask(1)
+  call s:assert.equals(line('.'), 28) " Should move to next task
 endfunction
 
 function! s:suite.test_move_to_parent_task()
@@ -246,6 +267,7 @@ function! s:suite.test_move_to_prev_task_map()
 endfunction
 
 function! s:suite.test_move_to_next_sibling_map()
+   " <C-j> is mapped to quicktask#move@MoveToNextSiblingOrTask()
    call cursor(1,1) 
    execute "normal \<C-j>"
    call s:assert.equals(line('.'), 3)
@@ -256,6 +278,7 @@ function! s:suite.test_move_to_next_sibling_map()
 endfunction
 
 function! s:suite.test_move_to_prev_sibling_map()
+   " <C-k> is mapped to quicktask#move@MoveToPrevSiblingOrTask()
    call cursor('$',1) 
    execute "normal \<C-k>"
    call s:assert.equals(line('.'), 28)
@@ -285,18 +308,19 @@ function! s:suite.test_move_to_prev_task_count()
     call s:assert.equals(line('.'), 3)
 endfunction
 
-function! s:suite.test_move_to_next_sibling_count()
+function! s:suite.test_move_to_next_sibling_or_task_count()
     " Start on "Child Section" then 2<C-j> should end on "- Another task"
     call cursor(16,1)
     execute "normal 2\<C-j>"
     call s:assert.equals(line('.'), 21)
 
     " no more siblings or children
+    " should move to next task of any heading
     execute "normal 2\<C-j>"
-    call s:assert.equals(line('.'), 21)
+    call s:assert.equals(line('.'), 28)
 endfunction
 
-function! s:suite.test_move_to_prev_sibling_count()
+function! s:suite.test_move_to_prev_sibling_or_task_count()
     " Start on "- Another task" then 2<C-k> should end on "Child Section"
     call cursor(21,1)
     execute "normal 3\<C-k>"
@@ -304,7 +328,7 @@ function! s:suite.test_move_to_prev_sibling_count()
 
     " big count should end on first parent
     execute "normal 100\<C-k>"
-    call s:assert.equals(line('.'), 3) " Should end on first parent
+    call s:assert.equals(line('.'), 3) " Should end on first task
 endfunction
 
 function! s:suite.test_move_to_parent_task_count()

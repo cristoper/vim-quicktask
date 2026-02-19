@@ -142,6 +142,22 @@ function! quicktask#utils#FindTaskTopParent() abort
 endfunction
 
 " ============================================================================
+" FindNextTask(): Find the next task in the buffer. {{{1
+"
+" Search forward for the next task line, regardless of indentation level.
+function! quicktask#utils#FindNextTask() abort
+    return search(s:task_or_section_regex, 'nW')
+endfunction
+
+" ============================================================================
+" FindPrevTask(): Find the previous task in the buffer. {{{1
+" "
+" Search backward for the previous task line, regardless of indentation level.
+function! quicktask#utils#FindPrevTask() abort
+    return search(s:task_or_section_regex, 'nbW')
+endfunction
+
+" ============================================================================
 " FindNextSibling(): Find the sibling task below the current task. {{{1
 "
 " Get the indent level of the current task and find a task below this one that
@@ -152,7 +168,7 @@ function! quicktask#utils#FindNextSibling() abort
     " task in buffer
     let cur_line = getline('.')
     if cur_line =~ '^$\|^#'
-        return search(s:task_or_section_regex, 'nW')
+        return quicktask#utils#FindNextTask()
     endif
 
     call quicktask#utils#FindTaskStart(1)
@@ -188,7 +204,7 @@ function! quicktask#utils#FindPrevSibling() abort
     " first task above us in the buffer
     let cur_line = getline('.')
     if cur_line =~ '^$\|^#'
-        return search(s:task_or_section_regex, 'nbW')
+        return quicktask#utils#FindPrevTask()
     endif
 
     call quicktask#utils#FindTaskStart(1)
@@ -750,6 +766,6 @@ endfunction
 
 " ============================================================================
 " TopLevelTasks(): Return line number of each top-level task in buffer. {{{1
-function! quicktask#utils#TopLevelTasks()
-     return filter(range(line('$'), 1, -1), 'getline(v:val) =~ "^[^\\t #]"')
+function! quicktask#utils#TopLevelTasks(first, last)
+     return filter(range(a:last, a:first, -1), 'getline(v:val) =~ "^[^\\t #]"')
  endfunction

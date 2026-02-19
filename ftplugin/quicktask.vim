@@ -196,7 +196,7 @@ endfunction
 "
 " SerializeNode(task) - a function that takes a task and returns a string
 function! QTExportBuffer(SerializeNode) abort
-    let nodes = reverse(quicktask#utils#TopLevelTasks())
+    let nodes = reverse(quicktask#utils#TopLevelTasks(1, line('$')))
     let str = ""
 
     function! s:serialize_closure(task) closure
@@ -245,6 +245,8 @@ nmap <silent> <Plug>MoveToNextSection        :<C-u>call quicktask#move#MoveToNex
 nmap <silent> <Plug>MoveToPrevSection        :<C-u>call quicktask#move#MoveToPrevSection(v:count1)<CR>
 nmap <silent> <Plug>MovePrevSibling          :<C-u>call quicktask#move#MoveToPrevSibling(v:count1)<CR>
 nmap <silent> <Plug>MoveNextSibling          :<C-u>call quicktask#move#MoveToNextSibling(v:count1)<CR>
+nmap <silent> <Plug>MovePrevSiblingOrTask    :<C-u>call quicktask#move#MoveToPrevSiblingOrTask(v:count1)<CR>
+nmap <silent> <Plug>MoveNextSiblingOrTask    :<C-u>call quicktask#move#MoveToNextSiblingOrTask(v:count1)<CR>
 nmap <silent> <Plug>MoveToParent             :<C-u>call quicktask#move#MoveToParentTask(v:count1)<CR>
 nmap <silent> <Plug>MoveToChild              :<C-u>call quicktask#move#MoveToChildTask(v:count1)<CR>
 nmap <silent> <Plug>MovePrevTask             :<C-u>call quicktask#move#MoveToPrevTask(v:count1)<CR>
@@ -283,8 +285,8 @@ if ! g:quicktask_no_mappings && ! exists('b:quicktask_did_mappings')
     nmap <silent><buffer> ]]          <Plug>MoveNextTask
     nmap <silent><buffer> [t          <Plug>MoveTopSibling
     nmap <silent><buffer> ]t          <Plug>MoveBottomSibling
-    nmap <silent><buffer> <C-k>       <Plug>MovePrevSibling
-    nmap <silent><buffer> <C-j>       <Plug>MoveNextSibling
+    nmap <silent><buffer> <C-k>       <Plug>MovePrevSiblingOrTask
+    nmap <silent><buffer> <C-j>       <Plug>MoveNextSiblingOrTask
     nmap <silent><buffer> <C-h>       <Plug>MoveToParent
     nmap <silent><buffer> <C-l>       <Plug>MoveToChild
 
