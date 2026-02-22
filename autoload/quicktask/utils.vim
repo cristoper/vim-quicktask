@@ -788,6 +788,8 @@ endfunction
 " last:  the last line of the range
 function! quicktask#utils#TopLevelTasks(first, last)
     " expand range to include start of task
+    let savepos = getpos('.')
+
     call cursor(a:first, 1)
     let first = quicktask#utils#FindTaskStart(v:true)
     if first == 0
@@ -816,6 +818,7 @@ function! quicktask#utils#TopLevelTasks(first, last)
         let tasks += [curline]
     endwhile
 
+    call setpos('.', savepos)
     return reverse(tasks)
  endfunction
 
