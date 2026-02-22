@@ -238,29 +238,40 @@ function! quicktask#utils#SelectTask(exclude_blanks) abort
 endfunction
 
 " ============================================================================
-" IndentTask(): Indent the current task. {{{1
+" IndentTask(): Indent/demote the current task. {{{1
 function! quicktask#utils#IndentTask() abort
-    " Only allow indenting if this task has a sibling above it
+    " maintain cursor column
+    let savecol = getpos('.')[2]
+
     let sibling = quicktask#utils#FindPrevSibling()
     if sibling == 0
+        " Only allow indenting if this task has a sibling above it
         call quicktask#utils#EchoWarning("Cannot indent task without a sibling above it")
         return
     endif
 
     call quicktask#utils#SelectTask(v:false)
     execute "normal >"
+
+    call setpos(".", [0, line('.'), savecol, 0])
 endfunction
 
 " ============================================================================
-" OutdentTask(): Outdent the current task. {{{1
+" OutdentTask(): Outdent/promote the current task. {{{1
 function! quicktask#utils#OutdentTask() abort
     " Only allow outdenting if we're not already at column 0
     if quicktask#utils#GetTaskIndent() == 0
         call quicktask#utils#EchoWarning("Cannot outdent task that is already at column 0")
         return
     endif
+    
+    " maintain cursor column
+    let savecol = getpos('.')[2]
+
     call quicktask#utils#SelectTask(v:false)
     execute "normal <"
+
+    call setpos(".", [0, line('.'), savecol, 0])
 endfunction
 
 " ============================================================================
@@ -432,12 +443,16 @@ endfunction
 "
 " Move the current task below the following task.
 function! quicktask#utils#MoveTaskDown() abort
+    " maintain cursor column
+    let savecol = getpos('.')[2]
+
     call quicktask#utils#FindTaskStart(1)
     let task_start = line('.')
 
     let next_sibling = quicktask#utils#FindNextSibling()
     if !next_sibling
         call quicktask#utils#EchoWarning("This task has no siblings below it. To move the task elsewhere, use delete/put.")
+        call cursor('.', savecol)
         return
     else
         call quicktask#utils#FindTaskEnd(v:true, v:false)
@@ -454,7 +469,7 @@ function! quicktask#utils#MoveTaskDown() abort
     call quicktask#utils#FindTaskEnd(v:true, v:false)
     let insert_line = line('.')
     call append(insert_line, task_text)
-    call cursor(insert_line+1, 0)
+    call cursor(insert_line+1, savecol)
 endfunction
 
 " ============================================================================
@@ -465,6 +480,9 @@ function! quicktask#utils#MoveTaskUp() abort
     if line('.') == 1
         return
     endif
+
+    " maintain cursor column
+    let savecol = getpos('.')[2]
 
     " Move the cursor to the task line that we are moving and get the line
     " number and indent level.
@@ -492,8 +510,7 @@ function! quicktask#utils#MoveTaskUp() abort
         " we should not move this task! Display a warning and abort.
         if parent_line > prev_sibling_line
             call quicktask#utils#EchoWarning("You can't move a task out of its parent task; use normal delete/put to move it.")
-            call cursor(task_start, 0)
-
+            call cursor(task_start, savecol)
             return
         endif
     endif
@@ -507,7 +524,7 @@ function! quicktask#utils#MoveTaskUp() abort
         call search('^\s\{'.indent.'}[^\t \@\*]', 'bW')
         let final_line = line('.')
         call quicktask#utils#MoveTaskDown()
-        call cursor(final_line, 0)
+        call cursor(final_line, savecol)
     endif
 endfunction
 
