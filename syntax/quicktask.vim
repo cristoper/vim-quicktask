@@ -38,19 +38,19 @@ syn match   quicktaskSection        '^.*:\s*$'
                                     \ contains=quicktaskMarker,@Spell
 
 syn match   quicktaskTask           '^\(\s*\)-.\{-}\n\%(\1[^-*]\{-}\n\)*'
-                                    \ contains=quicktaskMarker,quicktaskTicket,@Spell,quicktaskConstant,
+                                    \ contains=quicktaskMarker,quicktaskTicket,@Spell,
                                     \ quicktaskDatestamp,quicktaskTimestamp,quicktaskSnip,quicktaskUsername
 
 syn region quicktaskNote 
                                     \ start=/^\s\+\*\s/ 
                                     \ end=/^\ze\(\S\|\s*[-*@\$]\)/ 
                                     \ skipnl
-                                    \ contains=quicktaskMarker,quicktaskTicket,@Spell,quicktaskConstant,
+                                    \ contains=quicktaskMarker,quicktaskTicket,@Spell,
                                     \ quicktaskDone,quicktaskDatestamp,quicktaskTimestamp,quicktaskSnip,
                                     \ quicktaskIncomplete,quicktaskUsername
 
 syn match   quicktaskTimeNote       /^\s\+[@]\s\(Added\|Start\|Time\|DONE\).*$/
-                                    \ contains=quicktaskMarker,quicktaskTicket,@Spell,quicktaskConstant,
+                                    \ contains=quicktaskMarker,quicktaskTicket,@Spell,
                                     \ quicktaskDone,quicktaskDatestamp,quicktaskTimestamp,quicktaskSnip,
                                     \ quicktaskIncomplete
 
@@ -82,9 +82,6 @@ syn match   quicktaskUsername       display '\~[a-z.]*[a-z]'
 syn match   quicktaskSnip           display '^\s\+[$]\s[A-Za-z0-9-]\+$'
 " '\[\$:\s.\{-}]'
 
-syn match   quicktaskConstant       '\<[~yn]\>'
-syn keyword quicktaskConstant       true false yes no not shall null nil
-
 " 'Real' comments (not often used)
 syn match   quicktaskComment        "#.*"
 
@@ -100,7 +97,6 @@ hi def link quicktaskSnip           Number
 hi def link quicktaskTimeNote       Comment
 hi def link quicktaskDatestamp      Number
 hi def link quicktaskTimestamp      Number
-hi def link quicktaskConstant       Constant
 hi def link quicktaskIncomplete     Error
 hi def link quicktaskTicket         Special
 hi def link quicktaskUsername       Special
