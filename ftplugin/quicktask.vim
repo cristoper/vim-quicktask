@@ -223,7 +223,7 @@ nmap <silent> <Plug>ShowActiveTasksOnly      :call quicktask#utils#ShowActiveTas
 nmap <silent> <Plug>ShowWatchedTasksOnly     :call quicktask#utils#ShowWatchedTasksOnly()<CR>
 nmap <silent> <Plug>ShowTodayTasksOnly       :call quicktask#utils#ShowTodayTasksOnly()<CR>
 nmap <silent> <Plug>AddNextTimeToTask        :call quicktask#utils#AddNextTimeToTask()<CR>
-nmap <silent> <Plug>UpdateTaskTimes          :call quicktask#time#UpdateAllTaskTimes()<CR>
+nmap <silent> <Plug>UpdateTaskTimes          :silent call quicktask#time#UpdateAllTaskTimes()<CR>
 nmap <silent> <Plug>FindIncompleteTimestamps :call quicktask#utils#FindIncompleteTimestamps()<CR>:silent set hlsearch \| echo<CR>
 
 " Editing
