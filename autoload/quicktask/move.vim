@@ -140,7 +140,6 @@ endfunction
      if next == 0
          call quicktask#utils#EchoWarning("No next task found")
      else
-         echom next
          call cursor(next, 0)
      endif
  endfunction
