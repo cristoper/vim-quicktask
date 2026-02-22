@@ -525,12 +525,6 @@ g:quicktask_no_mappings                         *g:quicktask_no_mappings*
     annoying to use, so you should create your own mappings. See
     |quicktask-advanced-topics| for more on this.
 
-g:quicktask_auto_sum_time                      *g:quicktask_auto_sum_time*
-    If set to true (a non-zero number, such as 1), Quicktask will
-    automatically update all "@ Time" sums whenever a task is started/stopped
-    (with <leader>ts) or marked as "DONE" (with <leader>tD). See
-    |quicktask-organizing-tasks|.
-
 g:quicktask_autosave                            *g:quicktask_autosave*
     If set to true (a non-zero number, such as 1), Quicktask will attempt to
     save the current task list file when the window loses focus or you switch
@@ -542,21 +536,27 @@ g:quicktask_autosave                            *g:quicktask_autosave*
     If the current list file is not saved somewhere, the autosave will
     silently fail! Keep that in mind.
 
-g:quicktask_snip_path                           *g:quicktask_snip_path*
-    You MUST configure this option in order to use snips (see
-    |quicktask-snips|). The option must be set to an absolute path on disk
-    where you would like your snip files to be saved. For the moment, all
-    snips from all Quicktask lists are stored in the same location.
-
-g:quicktask_snip_win_maximize                   *g:quicktask_snip_win_maximize*
-    If set to 1, the snip window will be opened at full size. The default is
-    0. If this option is set to 1, it overrides the behavior of
-    |g:quicktask_snip_win_height|.
-
 g:quicktask_snip_win_height                     *g:quicktask_snip_win_height*
     If set to any numeric value, the snip window will open with the number of
     lines or columns given. Note that if |g:quicktask_snip_win_maximize| is
     set to 1, this option will have no effect.
+
+g:quicktask_task_insert_added                   *g:quicktask_task_insert_added*
+    If set to 1 (the default), an `@ Added [date]` date line with the date the
+    task was created will be automatically added to any new task created via
+    the mappings or commands (e.g., `<leader>to`). If set to 0, the date line
+    is not added.
+
+g:quicktask_task_added_include_time        *g:quicktask_task_added_include_time*
+    If set to 1, the time component is included in the automatically added `@
+    Added` line (e.g., `@ Added [Wed 2014-01-25 13:45]`). If set to 0 (the default),
+    only the date is included (e.g., `@ Added [Wed 2014-01-25]`).
+
+g:quicktask_auto_sum_time                      *g:quicktask_auto_sum_time*
+    If set to true (a non-zero number, such as 1), Quicktask will
+    automatically update all "@ Time" sums whenever a task is started/stopped
+    (with <leader>ts) or marked as "DONE" (with <leader>tD). See
+    |quicktask-organizing-tasks|.
 
 g:quicktask_snip_default_filetype
                                             *g:quicktask_snip_default_filetype*
@@ -570,6 +570,17 @@ g:quicktask_snip_win_split_direction    *g:quicktask_snip_win_split_direction*
     create a snip. The default is horizontal and the only other valid option
     is "vertical." If you specify anything else, or leave it blank, the window
     will split horizontally.
+
+g:quicktask_snip_path                           *g:quicktask_snip_path*
+    You MUST configure this option in order to use snips (see
+    |quicktask-snips|). The option must be set to an absolute path on disk
+    where you would like your snip files to be saved. For the moment, all
+    snips from all Quicktask lists are stored in the same location.
+
+g:quicktask_snip_win_maximize                   *g:quicktask_snip_win_maximize*
+    If set to 1, the snip window will be opened at full size. The default is
+    0. If this option is set to 1, it overrides the behavior of
+    |g:quicktask_snip_win_height|.
 
 ===============================================================================
 11. Advanced Topics                              *quicktask-advanced-topics*
@@ -634,8 +645,8 @@ look like this: >vim
     nmap <silent><buffer> ]]          <Plug>MoveNextTask
     nmap <silent><buffer> [t          <Plug>MoveTopSibling
     nmap <silent><buffer> ]t          <Plug>MoveBottomSibling
-    nmap <silent><buffer> <C-k>       <Plug>MovePrevSibling
-    nmap <silent><buffer> <C-j>       <Plug>MoveNextSibling
+    nmap <silent><buffer> <C-k>       <Plug>MovePrevSiblingOrTask
+    nmap <silent><buffer> <C-j>       <Plug>MoveNextSiblingOrTask
     nmap <silent><buffer> <C-h>       <Plug>MoveToParent
     nmap <silent><buffer> <C-l>       <Plug>MoveToChild
 
