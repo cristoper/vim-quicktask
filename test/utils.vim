@@ -124,9 +124,9 @@ function! s:suite.test_indent_task()
   call quicktask#utils#IndentTask()
 
   " Expect
-  let line_content = getline(5)
+  let line_content = getline(7)
   call s:assert.match(line_content, '^    - Second task$')
-  let line_content = getline(6)
+  let line_content = getline(8)
   call s:assert.match(line_content, '^      @ Added \[Fri 2026-02-13\]$')
 endfunction
 
@@ -235,7 +235,8 @@ function! s:suite.test_outdent_indent_all()
         \ '',
         \ '- Second task',
         \ '  @ Added [Fri 2026-02-13]',
-        \ '  @ Start [Fri 2026-02-13] [15:32], end [16:33]'
+        \ '  @ Start [Fri 2026-02-13] [15:32], end [16:33]',
+        \ '  @ Time [01:01]'
         \ ]
 
     call s:assert.equals(getline(1, '$'), expected)
@@ -245,12 +246,14 @@ function! s:suite.test_outdent_indent_all()
 
     let expected = [
         \ 'CURRENT TASKS:',
+        \ '  @ Time [01:01]',
         \ '  - My first task.',
         \ '    @ Added [Fri 2026-02-13]',
         \ '',
         \ '  - Second task',
         \ '    @ Added [Fri 2026-02-13]',
-        \ '    @ Start [Fri 2026-02-13] [15:32], end [16:33]'
+        \ '    @ Start [Fri 2026-02-13] [15:32], end [16:33]',
+        \ '    @ Time [01:01]'
         \ ]
 
     call s:assert.equals(getline(1, '$'), expected)

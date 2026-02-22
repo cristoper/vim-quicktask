@@ -131,6 +131,7 @@ endfunction
 " Get the line number of the topmost parent the current task. If no parent,
 " return 0
 function! quicktask#utils#FindTaskTopParent() abort
+    let save_pos = getcurpos('.')
     let line = quicktask#utils#FindTaskParent()
     let parent_line = line
     while parent_line != 0
@@ -138,6 +139,7 @@ function! quicktask#utils#FindTaskTopParent() abort
         call cursor(line, 0)
         let parent_line = quicktask#utils#FindTaskParent()
     endwhile
+    call setpos('.', save_pos)
     return line
 endfunction
 
@@ -253,6 +255,14 @@ function! quicktask#utils#IndentTask() abort
     call quicktask#utils#SelectTask(v:false)
     execute "normal >"
 
+
+    if g:quicktask_auto_sum_time
+        let top_parent = quicktask#utils#FindTaskTopParent()
+        if top_parent != 0
+            call quicktask#time#UpdateTaskTime(top_parent)
+        endif
+    endif
+    " call quicktask#move#MoveToNextTask(1)
     call setpos(".", [0, line('.'), savecol, 0])
 endfunction
 
@@ -272,6 +282,15 @@ function! quicktask#utils#OutdentTask() abort
     execute "normal <"
 
     call setpos(".", [0, line('.'), savecol, 0])
+
+    if g:quicktask_auto_sum_time
+        let top_parent = quicktask#utils#FindTaskTopParent()
+        if top_parent == 0
+            call quicktask#time#UpdateAllTaskTimes()
+        else
+            call quicktask#time#UpdateTaskTime(top_parent)
+        endif
+    endif
 endfunction
 
 " ============================================================================
@@ -823,7 +842,7 @@ function! quicktask#utils#TopLevelTasks(first, last)
     let curline = first
     let indent = quicktask#utils#GetTaskIndent()
     while v:true
-        let curline = quicktask#move#MoveToNextSiblingOrTask(1)
+        execute('silent! let curline = quicktask#move#MoveToNextSiblingOrTask(1)')
         if curline == 0 || curline > a:last
             break
         endif
