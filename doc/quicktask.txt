@@ -247,7 +247,7 @@ selected tasks.
 In addition to visual mode to select tasks, Quicktask supports the following
 operator pending objects which allow using tasks/sections as the objects of
 motion |operator|s in normal or visual mode. Hint for moving tasks around: use
-motions with these opeartors to yank/cut tasks and then |[p| and |[P| (paste
+motions with these operators to yank/cut tasks and then |[p| and |[P| (paste
 at current indentation) to paste them into your task tree. 
 
 at              Act on the current task and its children including blank lines
