@@ -797,7 +797,7 @@ endfunction
 " any timestamp notes that have start times and no end times (presumably
 " beceause you forgot to end them or they are still pending).
 function! quicktask#utils#FindIncompleteTimestamps()
-    let @/ = '@\sStart\s\[\w\w\w\s\d\d\d\d-\d\d-\d\d\]\s\[\d\d:\d\d\]$'
+    let @/ = '@\sStart\s\[[^\]]\{1,10}\s\d\d\d\d-\d\d-\d\d\]\s\[\d\d:\d\d\]$'
 endfunction
 
 " ============================================================================
