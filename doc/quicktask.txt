@@ -221,6 +221,9 @@ mappings are configurable and that configuration is covered in
                 the date, as it is a pattern-based match. This would unfold
                 items that were added OR completed today.
 
+<Leader>tw      Show only tasks containing the word "WATCH". This collapses all
+                other tasks and reveals the ones you are currently WATCHing.
+
 <Leader>tv      Visually select the current task. This allows you to very
                 quickly use Vim's own yank/delete/put commands to move tasks
                 around to other sections or copy them to the system clipboard,
